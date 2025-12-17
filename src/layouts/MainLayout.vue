@@ -6,7 +6,34 @@
 
         <q-toolbar-title> Dictation Tools </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div class="row items-center q-gutter-sm">
+          <!-- Language Switcher -->
+          <q-btn-dropdown
+            flat
+            dense
+            icon="language"
+            :label="currentLanguage.name"
+            aria-label="Switch language"
+          >
+            <q-list>
+              <q-item
+                v-for="lang in availableLanguages"
+                :key="lang.code"
+                clickable
+                @click="switchLanguage(lang.code)"
+              >
+                <q-item-section avatar>
+                  <span class="text-h6">{{ lang.flag }}</span>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ lang.name }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+
+          <!-- <div class="text-caption">Quasar v{{ $q.version }}</div> -->
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -14,11 +41,7 @@
       <q-list>
         <q-item-label header> Navigation </q-item-label>
 
-        <q-item
-          clickable
-          :to="{ name: 'index' }"
-          :active-class="'text-primary'"
-        >
+        <q-item clickable :to="{ name: 'index' }" :active-class="'text-primary'">
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
@@ -27,11 +50,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          :to="{ path: '/tags' }"
-          :active-class="'text-primary'"
-        >
+        <q-item clickable :to="{ path: '/tags' }" :active-class="'text-primary'">
           <q-item-section avatar>
             <q-icon name="label" />
           </q-item-section>
@@ -41,17 +60,23 @@
           </q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          :to="{ path: '/settings' }"
-          :active-class="'text-primary'"
-        >
+        <q-item clickable :to="{ path: '/settings' }" :active-class="'text-primary'">
           <q-item-section avatar>
             <q-icon name="settings" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Settings</q-item-label>
             <q-item-label caption>Manage data & preferences</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable :to="{ path: '/units' }" :active-class="'text-primary'">
+          <q-item-section avatar>
+            <q-icon name="school" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Units</q-item-label>
+            <q-item-label caption>Manage vocabulary units</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -70,8 +95,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { availableLanguages } from 'src/i18n';
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -120,7 +147,27 @@ const linksList: EssentialLinkProps[] = [
 
 const leftDrawerOpen = ref(false);
 
+// i18n setup
+const { locale } = useI18n();
+
+// Computed property for current language
+const currentLanguage = computed(() => {
+  return (
+    availableLanguages.find((lang) => lang.code === locale.value) || {
+      code: 'en-US',
+      name: 'English',
+      flag: '🇺🇸',
+    }
+  );
+});
+
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+function switchLanguage(languageCode: string) {
+  locale.value = languageCode;
+  // Save language preference to localStorage
+  localStorage.setItem('language', languageCode);
 }
 </script>

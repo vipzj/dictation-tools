@@ -22,8 +22,27 @@ declare module 'vue-i18n' {
 /* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export default defineBoot(({ app }) => {
+  // Get saved language from localStorage or use browser language
+  const savedLanguage = localStorage.getItem('language');
+  const browserLanguage = navigator.language || 'en-US';
+
+  // Determine the best language to use
+  let locale = 'en-US';
+  if (savedLanguage && messages[savedLanguage as MessageLanguages]) {
+    locale = savedLanguage;
+  } else if (messages[browserLanguage as MessageLanguages]) {
+    locale = browserLanguage;
+  } else {
+    // Try to match language code without region (e.g., 'zh' for 'zh-CN')
+    const languageCode = browserLanguage.split('-')[0];
+    const matchingLocale = Object.keys(messages).find(key => key.startsWith(languageCode || ''));
+    if (matchingLocale) {
+      locale = matchingLocale as MessageLanguages;
+    }
+  }
+
   const i18n = createI18n<{ message: MessageSchema }, MessageLanguages>({
-    locale: 'en-US',
+    locale,
     legacy: false,
     messages,
   });
