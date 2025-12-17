@@ -41,6 +41,20 @@
           </q-item-section>
         </q-item>
 
+        <q-item
+          clickable
+          :to="{ path: '/settings' }"
+          :active-class="'text-primary'"
+        >
+          <q-item-section avatar>
+            <q-icon name="settings" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Settings</q-item-label>
+            <q-item-label caption>Manage data & preferences</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-separator class="q-my-md" />
 
         <q-item-label header> Essential Links </q-item-label>
