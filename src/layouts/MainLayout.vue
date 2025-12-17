@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Dictation Tools </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
@@ -12,6 +12,37 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
+        <q-item-label header> Navigation </q-item-label>
+
+        <q-item
+          clickable
+          :to="{ name: 'index' }"
+          :active-class="'text-primary'"
+        >
+          <q-item-section avatar>
+            <q-icon name="home" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Home</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          :to="{ path: '/tags' }"
+          :active-class="'text-primary'"
+        >
+          <q-item-section avatar>
+            <q-icon name="label" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Tags</q-item-label>
+            <q-item-label caption>Manage tags</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-md" />
+
         <q-item-label header> Essential Links </q-item-label>
 
         <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
