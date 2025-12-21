@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'tags', name: 'tags', component: () => import('pages/TagManagement.vue') },
       { path: 'settings', name: 'settings', component: () => import('pages/Settings.vue') },
       { path: 'units', name: 'units', component: () => import('pages/UnitManagement.vue') },
+      { path: 'dictation', name: 'dictation', component: () => import('pages/DictationPage.vue') },
     ],
   },
 

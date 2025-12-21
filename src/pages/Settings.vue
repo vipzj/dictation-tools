@@ -9,6 +9,11 @@
         </div>
       </div>
 
+      <!-- Dictation Settings Section -->
+      <div class="col-12">
+        <DictationSettings />
+      </div>
+
       <!-- Data Statistics Section -->
       <div class="col-12">
         <q-card flat bordered class="q-pa-md">
@@ -46,6 +51,11 @@
               <div class="col-12 col-sm-6 col-md-3">
                 <ClearDataButton @clear="handleClearData" />
               </div>
+
+              <!-- Quick Initialize -->
+              <div class="col-12 col-sm-6 col-md-3">
+                <QuickInitializeButton @initialize="handleQuickInitialize" />
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -80,7 +90,10 @@ import DataViewer from 'components/DataViewer.vue';
 import ExportButton from 'components/ExportButton.vue';
 import FileUpload from 'components/FileUpload.vue';
 import ClearDataButton from 'components/ClearDataButton.vue';
+import QuickInitializeButton from 'components/QuickInitializeButton.vue';
+import DictationSettings from 'components/DictationSettings.vue';
 import { dataManager } from 'src/services/dataManager';
+import type { InitializationStats } from 'src/types/initializer';
 
 const $q = useQuasar();
 
@@ -145,6 +158,18 @@ async function handleClearData() {
       icon: 'error'
     });
   }
+}
+
+// Handle quick initialize data
+function handleQuickInitialize(stats: InitializationStats) {
+  // Show a detailed success notification
+  $q.notify({
+    type: 'positive',
+    message: 'Sample data initialization complete!',
+    caption: `Created ${stats.tagsCount} tags, ${stats.unitsCount} units, and ${stats.vocabularyCount} vocabulary items.`,
+    icon: 'auto_awesome',
+    timeout: 4000
+  });
 }
 
 onMounted(() => {

@@ -80,6 +80,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable :to="{ path: '/dictation' }" :active-class="'text-primary'">
+          <q-item-section avatar>
+            <q-icon name="headphones" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dictation</q-item-label>
+            <q-item-label caption>Practice dictation with audio</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-separator class="q-my-md" />
 
         <q-item-label header> Essential Links </q-item-label>

@@ -1,12 +1,14 @@
 import Dexie, { type Table } from 'dexie'
 import type { Tag } from '../types/tag'
 import type { Unit, VocabularyItem, UnitTag } from '../types/unit'
+import type { DictationSession } from '../types/dictation'
 
 export class AppDatabase extends Dexie {
   tags!: Table<Tag>
   units!: Table<Unit>
   vocabularyItems!: Table<VocabularyItem>
   unitTags!: Table<UnitTag>
+  dictationSessions!: Table<DictationSession>
 
   constructor() {
     super('dictation-tools-database')
@@ -37,6 +39,28 @@ export class AppDatabase extends Dexie {
         oldUnitTag.id = `${oldUnitTag.unitId}-${oldUnitTag.tagId}`
       })
     })
+
+    this.version(4).stores({
+      tags: 'id, name, color, createdAt, updatedAt',
+      units: 'id, name, createdAt, updatedAt',
+      vocabularyItems: 'id, unitId, type, text, hasAudio, createdAt, updatedAt',
+      unitTags: '++id, unitId, tagId, createdAt',
+      dictationSessions: 'id, unitId, startedAt, completedAt, accuracy, settings' // Dictation sessions table
+    }).upgrade(() => {
+      // Initialize dictation settings in settings if they don't exist
+      console.log('Upgrading database to version 4 - adding dictation support')
+    })
+
+    this.version(5).stores({
+      tags: 'id, name, color, createdAt, updatedAt',
+      units: 'id, name, createdAt, updatedAt',
+      vocabularyItems: 'id, unitId, type, text, hasAudio, createdAt, updatedAt',
+      unitTags: '++id, unitId, tagId, createdAt',
+      dictationSessions: 'id, unitId, startedAt, completedAt, accuracy, settings' // Dictation sessions table
+    }).upgrade(() => {
+      // This version ensures proper schema consistency
+      console.log('Upgrading database to version 5 - schema consistency')
+    })
   }
 
   // Helper method to ensure database is properly initialized
@@ -45,6 +69,12 @@ export class AppDatabase extends Dexie {
     if (!this.isOpen()) {
       await this.open();
     }
+  }
+
+  // Helper method to clear and reset the database if needed
+  async resetDatabase(): Promise<void> {
+    await this.delete()
+    console.log('Database cleared - will recreate with latest schema')
   }
 }
 
@@ -385,4 +415,179 @@ export const unitTagService = {
     throw new Error(`Failed to set unit tags: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
+
+}
+
+export const dictationService = {
+  async createDictationSession(session: Omit<DictationSession, 'id'>): Promise<DictationSession> {
+    const id = crypto.randomUUID()
+
+    // Create clean session object to avoid circular references
+    const newSession: DictationSession = {
+      id,
+      unitId: session.unitId,
+      unitName: session.unitName,
+      settings: {
+        playCount: session.settings.playCount,
+        interval: session.settings.interval
+      },
+      results: session.results.map(result => ({
+        vocabularyItemId: result.vocabularyItemId,
+        vocabularyText: result.vocabularyText,
+        vocabularyType: result.vocabularyType,
+        isCorrect: result.isCorrect,
+        audioSource: result.audioSource
+      })),
+      accuracy: session.accuracy,
+      startedAt: session.startedAt,
+      completedAt: session.completedAt,
+      duration: session.duration
+    }
+
+    await db.dictationSessions.add(newSession)
+    return newSession
+  },
+
+  async getDictationSessionById(id: string): Promise<DictationSession | undefined> {
+    const session = await db.dictationSessions.get(id)
+    if (!session) return undefined
+
+    // Convert date strings back to Date objects
+    return {
+      ...session,
+      startedAt: new Date(session.startedAt),
+      completedAt: new Date(session.completedAt)
+    }
+  },
+
+  async updateDictationSession(id: string, updates: Partial<Omit<DictationSession, 'id'>>): Promise<DictationSession | undefined> {
+    const existing = await db.dictationSessions.get(id)
+    if (!existing) return undefined
+
+    // Convert date strings back to Date objects if needed
+    const existingWithDates: DictationSession = {
+      ...existing,
+      startedAt: new Date(existing.startedAt),
+      completedAt: new Date(existing.completedAt)
+    }
+
+    // Create clean updates object to avoid circular references
+    const cleanUpdates: Partial<DictationSession> = {}
+
+    // Copy only the properties that are being updated
+    if (updates.accuracy !== undefined) {
+      cleanUpdates.accuracy = updates.accuracy
+    }
+
+    if (updates.results !== undefined) {
+      cleanUpdates.results = updates.results.map(result => ({
+        vocabularyItemId: result.vocabularyItemId,
+        vocabularyText: result.vocabularyText,
+        vocabularyType: result.vocabularyType,
+        isCorrect: result.isCorrect,
+        audioSource: result.audioSource
+      }))
+    }
+
+    if (updates.settings !== undefined) {
+      cleanUpdates.settings = {
+        playCount: updates.settings.playCount,
+        interval: updates.settings.interval
+      }
+    }
+
+    if (updates.startedAt !== undefined) {
+      cleanUpdates.startedAt = updates.startedAt
+    }
+
+    if (updates.completedAt !== undefined) {
+      cleanUpdates.completedAt = updates.completedAt
+    }
+
+    if (updates.duration !== undefined) {
+      cleanUpdates.duration = updates.duration
+    }
+
+    const updatedSession: DictationSession = {
+      ...existingWithDates,
+      ...cleanUpdates
+    }
+
+    await db.dictationSessions.update(id, updatedSession)
+    return updatedSession
+  },
+
+  async deleteDictationSession(id: string): Promise<boolean> {
+    await db.dictationSessions.delete(id)
+    return true
+  },
+
+  async getDictationSessionsByUnit(unitId: string): Promise<DictationSession[]> {
+    return await db.dictationSessions
+      .where('unitId')
+      .equals(unitId)
+      .toArray()
+      .then(sessions => sessions.map(session => ({
+        ...session,
+        startedAt: new Date(session.startedAt),
+        completedAt: new Date(session.completedAt)
+      })).sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime()))
+  },
+
+  async getAllDictationSessions(): Promise<DictationSession[]> {
+    return await db.dictationSessions
+      .toCollection()
+      .toArray()
+      .then(sessions => sessions.map(session => ({
+        ...session,
+        startedAt: new Date(session.startedAt),
+        completedAt: new Date(session.completedAt)
+      })).sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime()))
+  },
+
+  async getDictationSessionStats(unitId?: string): Promise<{
+    totalSessions: number
+    averageAccuracy: number
+    bestAccuracy: number
+    recentAccuracy: number
+  }> {
+    let sessions: DictationSession[]
+
+    if (unitId) {
+      sessions = await this.getDictationSessionsByUnit(unitId)
+    } else {
+      sessions = await this.getAllDictationSessions()
+    }
+
+    if (sessions.length === 0) {
+      return {
+        totalSessions: 0,
+        averageAccuracy: 0,
+        bestAccuracy: 0,
+        recentAccuracy: 0
+      }
+    }
+
+    const accuracies = sessions.map(s => s.accuracy)
+    const averageAccuracy = accuracies.reduce((sum, acc) => sum + acc, 0) / accuracies.length
+    const bestAccuracy = Math.max(...accuracies)
+
+    // Recent accuracy from last 5 sessions
+    const recentSessions = sessions.slice(0, 5)
+    const recentAccuracy = recentSessions.length > 0
+      ? recentSessions.reduce((sum, s) => sum + s.accuracy, 0) / recentSessions.length
+      : 0
+
+    return {
+      totalSessions: sessions.length,
+      averageAccuracy: Math.round(averageAccuracy * 100) / 100,
+      bestAccuracy: Math.round(bestAccuracy * 100) / 100,
+      recentAccuracy: Math.round(recentAccuracy * 100) / 100
+    }
+  },
+
+  async clearAllDictationSessions(): Promise<boolean> {
+    await db.dictationSessions.clear()
+    return true
+  }
 }

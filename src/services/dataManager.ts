@@ -25,14 +25,22 @@ class DataManager {
   async exportData(): Promise<void> {
     try {
       // Collect all data from IndexedDB
-      const tags = await db.tags.toArray();
+      const [tags, units, vocabularyItems, dictationSessions] = await Promise.all([
+        db.tags.toArray(),
+        db.units.toArray(),
+        db.vocabularyItems.toArray(),
+        db.dictationSessions.toArray()
+      ]);
 
       const exportData: ExportData = {
         version: this.VERSION,
         exportDate: new Date().toISOString(),
         applicationName: this.APP_NAME,
         data: {
-          tags
+          tags,
+          units,
+          vocabularyItems,
+          dictationSessions
         }
       };
 
@@ -109,18 +117,18 @@ class DataManager {
    */
   async clearAllData(): Promise<ClearResult> {
     try {
-      // Clear all tables
-      await db.tags.clear();
+      // Completely delete the entire IndexedDB database
+      await db.delete();
 
       return {
         success: true,
-        message: 'All data cleared successfully'
+        message: 'Database deleted successfully - will recreate on next access'
       };
     } catch (error) {
-      console.error('Clear data failed:', error);
+      console.error('Database deletion failed:', error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to clear data'
+        message: error instanceof Error ? error.message : 'Failed to delete database'
       };
     }
   }
@@ -130,14 +138,22 @@ class DataManager {
    */
   async getAllData(): Promise<ExportData> {
     try {
-      const tags = await db.tags.toArray();
+      const [tags, units, vocabularyItems, dictationSessions] = await Promise.all([
+        db.tags.toArray(),
+        db.units.toArray(),
+        db.vocabularyItems.toArray(),
+        db.dictationSessions.toArray()
+      ]);
 
       return {
         version: this.VERSION,
         exportDate: new Date().toISOString(),
         applicationName: this.APP_NAME,
         data: {
-          tags
+          tags,
+          units,
+          vocabularyItems,
+          dictationSessions
         }
       };
     } catch (error) {

@@ -24,15 +24,31 @@
 
       <q-card-section class="q-pt-lg">
         <div class="text-body1 q-mb-md">
-          This action will <strong>permanently delete</strong> all data stored in this application:
+          This action will <strong>permanently delete the entire database file</strong> stored in this application:
         </div>
 
         <div class="q-ml-lg q-mb-md">
           <ul class="text-negative">
-            <li>All tags ({{ currentTagCount }} items)</li>
-            <li>Any application preferences</li>
-            <li>Local cache and temporary data</li>
+            <li>All tags ({{ dataCounts.tags }} items)</li>
+            <li>All units ({{ dataCounts.units }} items)</li>
+            <li>All vocabulary items ({{ dataCounts.vocabularyItems }} items)</li>
+            <li>All dictation sessions ({{ dataCounts.dictationSessions }} items)</li>
+            <li>Unit-tag relationships ({{ dataCounts.unitTags }} items)</li>
+            <li>Audio recordings and blobs (if any)</li>
+            <li>Database file: <strong>dictation-tools-database</strong></li>
           </ul>
+        </div>
+
+        <div class="bg-red-1 q-pa-md rounded-borders q-mb-md">
+          <div class="text-subtitle2 text-red-9 q-mb-sm">
+            <q-icon name="warning" class="q-mr-sm" />
+            ⚠️ Complete Database Deletion:
+          </div>
+          <div class="text-body2 text-red-8">
+            This will <strong>permanently delete the entire database file</strong>.
+            The database will be recreated automatically with fresh schema when you restart the application.
+            This action cannot be undone and is more destructive than regular data clearing.
+          </div>
         </div>
 
         <div class="bg-orange-1 q-pa-md rounded-borders">
@@ -41,7 +57,7 @@
             Important:
           </div>
           <div class="text-body2 text-orange-8">
-            This action cannot be undone. Make sure you have a backup before proceeding.
+            Make sure you have exported a backup before proceeding. All user data will be permanently lost.
           </div>
         </div>
       </q-card-section>
@@ -159,20 +175,46 @@ const showSuccessDialog = ref(false);
 const showErrorDialog = ref(false);
 const confirmationText = ref('');
 const errorMessage = ref('');
-const currentTagCount = ref(0);
+const dataCounts = ref({
+  tags: 0,
+  units: 0,
+  vocabularyItems: 0,
+  dictationSessions: 0,
+  unitTags: 0
+});
 
 // Computed property to check if confirmation is valid
 const isConfirmationValid = computed(() => {
   return confirmationText.value === 'DELETE ALL DATA';
 });
 
-// Load current data count
+// Load comprehensive data count
 async function loadDataCount() {
   try {
-    currentTagCount.value = await db.tags.count();
+    const [tags, units, vocabulary, sessions, unitTags] = await Promise.all([
+      db.tags.count(),
+      db.units.count(),
+      db.vocabularyItems.count(),
+      db.dictationSessions.count(),
+      db.unitTags.count()
+    ]);
+
+    dataCounts.value = {
+      tags,
+      units,
+      vocabularyItems: vocabulary,
+      dictationSessions: sessions,
+      unitTags
+    };
   } catch (error) {
     console.error('Failed to load data count:', error);
-    currentTagCount.value = 0;
+    dataCounts.value = {
+      tags: 0,
+      units: 0,
+      vocabularyItems: 0,
+      dictationSessions: 0,
+      unitTags: 0
+    };
   }
 }
 
@@ -205,8 +247,14 @@ async function confirmClearData() {
       showSuccessDialog.value = true;
       emit('clear');
 
-      // Refresh the page data count for display
-      currentTagCount.value = 0;
+      // Reset data counts since database is completely deleted
+      dataCounts.value = {
+        tags: 0,
+        units: 0,
+        vocabularyItems: 0,
+        dictationSessions: 0,
+        unitTags: 0
+      };
     } else {
       // Error
       errorMessage.value = result.message || 'Unknown error occurred';
