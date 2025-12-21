@@ -46,3 +46,12 @@ export const DEFAULT_DICTATION_SETTINGS: DictationSettings = {
   interval: 3,
   intraWordInterval: 1.0
 } as const
+
+// Enhanced DictationResult with review initialization data
+export interface DictationResultWithReviewInit extends DictationResult {
+  reviewInitialization?: {
+    initialMemoryLevel: number
+    initialDifficultyScore: number
+    errorFrequency: number
+  }
+}

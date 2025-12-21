@@ -43,6 +43,11 @@ export class SettingsService {
     return this.settings
   }
 
+  saveSettingsToStorage(settings: AppSettings): void {
+    this.settings = settings
+    this.saveSettings(settings)
+  }
+
   private saveSettings(settings: AppSettings): void {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
@@ -57,6 +62,10 @@ export class SettingsService {
       dictation: {
         ...current.dictation,
         ...updates.dictation
+      },
+      review: {
+        ...current.review,
+        ...updates.review
       }
     }
   }
@@ -66,6 +75,10 @@ export class SettingsService {
       dictation: {
         ...DEFAULT_SETTINGS.dictation,
         ...settings.dictation
+      },
+      review: {
+        ...DEFAULT_SETTINGS.review,
+        ...settings.review
       }
     }
   }

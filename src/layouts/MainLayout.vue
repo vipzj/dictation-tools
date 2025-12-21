@@ -100,6 +100,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable :to="{ path: '/review' }" :active-class="'text-primary'">
+          <q-item-section avatar>
+            <q-icon name="psychology" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Review</q-item-label>
+            <q-item-label caption>Spaced repetition practice</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-separator class="q-my-md" />
 
         <q-item-label header> Essential Links </q-item-label>

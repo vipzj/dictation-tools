@@ -145,44 +145,7 @@ export class DictationAudioService {
     // Don't reset counters here - let processQueue handle it when starting next item
   }
 
-  private async playAudioBlob(blob: Blob): Promise<void> {
-    return new Promise((resolve) => {
-      if (!this.isPlaying) {
-        resolve()
-        return
-      }
-
-      try {
-        // Create object URL for the blob
-        const audioUrl = URL.createObjectURL(blob)
-        this.currentAudio = new Audio(audioUrl)
-
-        this.currentAudio.onended = () => {
-          URL.revokeObjectURL(audioUrl)
-          this.currentAudio = null
-          resolve()
-        }
-
-        this.currentAudio.onerror = (error) => {
-          URL.revokeObjectURL(audioUrl)
-          this.currentAudio = null
-          console.error('Audio playback error:', error)
-          resolve() // Continue even if audio fails
-        }
-
-        this.currentAudio.play().catch(error => {
-          console.error('Failed to play audio:', error)
-          URL.revokeObjectURL(audioUrl)
-          this.currentAudio = null
-          resolve() // Continue even if audio fails
-        })
-      } catch (error) {
-        console.error('Error playing audio blob:', error)
-        resolve()
-      }
-    })
-  }
-
+  
   private async playTTS(text: string, language: 'chinese' | 'english'): Promise<void> {
     return new Promise((resolve) => {
       if (!this.isPlaying) {
@@ -296,6 +259,92 @@ export class DictationAudioService {
 
   getRemainingInterval(): number {
     return this.remainingInterval
+  }
+
+  public async playAudioBlob(audioBlob: Blob): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.currentAudio) {
+        this.currentAudio.pause()
+        this.currentAudio = null
+      }
+
+      this.currentAudio = new Audio()
+      this.currentAudio.src = URL.createObjectURL(audioBlob)
+
+      this.currentAudio.onended = () => {
+        URL.revokeObjectURL(this.currentAudio!.src)
+        this.currentAudio = null
+        resolve()
+      }
+
+      this.currentAudio.onerror = () => {
+        URL.revokeObjectURL(this.currentAudio!.src)
+        this.currentAudio = null
+        reject(new Error('Audio playback failed'))
+      }
+
+      this.currentAudio.play().catch(reject)
+    })
+  }
+
+  public async playTextToSpeech(text: string, language: 'chinese' | 'english'): Promise<void> {
+    // 使用Web Speech API进行TTS
+    return new Promise((resolve, reject) => {
+      if (!('speechSynthesis' in window)) {
+        reject(new Error('Speech synthesis not supported'))
+        return
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = language === 'chinese' ? 'zh-CN' : 'en-US'
+      utterance.rate = 0.9
+      utterance.pitch = 1
+
+      utterance.onend = () => resolve()
+      utterance.onerror = (event) => reject(new Error(`Speech synthesis error: ${event.error}`))
+
+      window.speechSynthesis.speak(utterance)
+    })
+  }
+
+  public async recordAudio(): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        reject(new Error('Audio recording not supported'))
+        return
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          const mediaRecorder = new MediaRecorder(stream)
+          const audioChunks: Blob[] = []
+
+          mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data)
+          }
+
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+            stream.getTracks().forEach(track => track.stop())
+            resolve(audioBlob)
+          }
+
+          mediaRecorder.onerror = () => {
+            stream.getTracks().forEach(track => track.stop())
+            reject(new Error('Recording failed'))
+          }
+
+          mediaRecorder.start()
+
+          // 自动停止录制（5秒限制）
+          setTimeout(() => {
+            if (mediaRecorder.state === 'recording') {
+              mediaRecorder.stop()
+            }
+          }, 5000)
+        })
+        .catch(reject)
+    })
   }
 }
 

@@ -99,7 +99,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { dictationService } from '../services/indexeddb'
+import { dictationService, dictationErrorAnalyzer } from '../services/index'
 import type { DictationSession, DictationResult } from '../types/dictation'
 
 interface Props {
@@ -204,6 +204,31 @@ const saveResults = async () => {
       results: cleanResults,
       accuracy: finalAccuracy
     })
+
+    // Add error words to review library
+    const errorResults = cleanResults.filter(result => !result.isCorrect)
+    if (errorResults.length > 0) {
+      try {
+        await dictationErrorAnalyzer.addErrorsToReviewLibrary(errorResults)
+
+        // Show success notification for review library addition
+        $q.notify({
+          type: 'positive',
+          message: `已将 ${errorResults.length} 个错误词汇添加到复习库`,
+          icon: 'add_task',
+          timeout: 3000
+        })
+      } catch (reviewError) {
+        console.error('Failed to add errors to review library:', reviewError)
+        // Don't fail the whole save operation if review library addition fails
+        $q.notify({
+          type: 'warning',
+          message: '听写结果已保存，但添加到复习库时出现问题',
+          icon: 'warning',
+          timeout: 3000
+        })
+      }
+    }
 
     emit('saved')
     close()

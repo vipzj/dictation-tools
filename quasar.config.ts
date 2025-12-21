@@ -63,7 +63,40 @@ export default defineConfig((ctx) => {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
+      // Fix circular dependencies & combine all plugins
       vitePlugins: [
+        {
+          name: 'vite-plugin-dynamic-import',
+          configResolved(config) {
+            // Add manual chunks to resolve circular dependencies
+            config.build.rollupOptions = {
+              ...config.build.rollupOptions,
+              output: {
+                ...config.build.rollupOptions?.output,
+                manualChunks: {
+                  // Group components together (services excluded to avoid circular dependencies)
+                  'components': [
+                    './src/components/DictationDialog.vue',
+                    './src/components/DictationPracticeDialog.vue',
+                    './src/components/DictationResultsDialog.vue',
+                    './src/components/ReviewPracticeDialog.vue',
+                    './src/components/ReviewResultsDialog.vue'
+                  ],
+                  // Group pages together
+                  'pages': [
+                    './src/pages/DictationPage.vue',
+                    './src/pages/DictationHistoryPage.vue',
+                    './src/pages/ReviewPage.vue',
+                    './src/pages/ReviewHistoryPage.vue',
+                    './src/pages/SettingsPage.vue',
+                    './src/pages/TagManagement.vue',
+                    './src/pages/UnitManagement.vue'
+                  ]
+                }
+              }
+            }
+          }
+        },
         [
           '@intlify/unplugin-vue-i18n/vite',
           {

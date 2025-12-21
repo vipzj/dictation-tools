@@ -2,6 +2,7 @@ import Dexie, { type Table } from 'dexie'
 import type { Tag } from '../types/tag'
 import type { Unit, VocabularyItem, UnitTag } from '../types/unit'
 import type { DictationSession } from '../types/dictation'
+import type { MemoryState, ReviewSession, ReviewResult, ReviewVocabulary, ReviewMemoryState } from '../types/review'
 
 export class AppDatabase extends Dexie {
   tags!: Table<Tag>
@@ -9,6 +10,11 @@ export class AppDatabase extends Dexie {
   vocabularyItems!: Table<VocabularyItem>
   unitTags!: Table<UnitTag>
   dictationSessions!: Table<DictationSession>
+  memoryStates!: Table<MemoryState>
+  reviewSessions!: Table<ReviewSession>
+  reviewResults!: Table<ReviewResult>
+  reviewVocabulary!: Table<ReviewVocabulary>
+  reviewMemoryStates!: Table<ReviewMemoryState>
 
   constructor() {
     super('dictation-tools-database')
@@ -60,6 +66,37 @@ export class AppDatabase extends Dexie {
     }).upgrade(() => {
       // This version ensures proper schema consistency
       console.log('Upgrading database to version 5 - schema consistency')
+    })
+
+    this.version(6).stores({
+      tags: 'id, name, color, createdAt, updatedAt',
+      units: 'id, name, createdAt, updatedAt',
+      vocabularyItems: 'id, unitId, type, text, hasAudio, createdAt, updatedAt',
+      unitTags: '++id, unitId, tagId, createdAt',
+      dictationSessions: 'id, unitId, startedAt, completedAt, accuracy, settings',
+      memoryStates: 'id, vocabularyItemId, memoryLevel, nextReviewDate, lastReviewDate, difficultyScore, updatedAt',
+      reviewSessions: 'id, startedAt, completedAt, accuracy, duration',
+      reviewResults: 'id, reviewSessionId, vocabularyItemId, isCorrect, responseTime'
+    }).upgrade(async () => {
+      console.log('Upgrading database to version 6 - adding review system support')
+      // Initialize memory states for existing vocabulary items
+      await initializeMemoryStates()
+    })
+
+    this.version(7).stores({
+      tags: 'id, name, color, createdAt, updatedAt',
+      units: 'id, name, createdAt, updatedAt',
+      vocabularyItems: 'id, unitId, type, text, hasAudio, createdAt, updatedAt',
+      unitTags: '++id, unitId, tagId, createdAt',
+      dictationSessions: 'id, unitId, startedAt, completedAt, accuracy, settings',
+      memoryStates: 'id, vocabularyItemId, memoryLevel, nextReviewDate, lastReviewDate, difficultyScore, updatedAt',
+      reviewSessions: 'id, startedAt, completedAt, accuracy, duration',
+      reviewResults: 'id, reviewSessionId, vocabularyItemId, isCorrect, responseTime',
+      reviewVocabulary: 'id, sourceUnitId, sourceVocabularyItemId, text, type, addedAt, hasAudio, audioSource, createdAt, updatedAt',
+      reviewMemoryStates: 'id, reviewVocabularyId, memoryLevel, nextReviewDate, lastReviewDate, difficultyScore, updatedAt'
+    }).upgrade(() => {
+      console.log('Upgrading database to version 7 - adding independent review vocabulary system')
+      // No initial data migration needed for review vocabulary - starts empty
     })
   }
 
@@ -599,5 +636,217 @@ export const dictationService = {
   async clearAllDictationSessions(): Promise<boolean> {
     await db.dictationSessions.clear()
     return true
+  }
+}
+
+// Initialize memory states for existing vocabulary items
+async function initializeMemoryStates(): Promise<void> {
+  try {
+    const vocabularyItems = await db.vocabularyItems.toArray()
+    const dictationSessions = await db.dictationSessions.toArray()
+
+    for (const vocabItem of vocabularyItems) {
+      // Check if memory state already exists
+      const existingState = await db.memoryStates.where('vocabularyItemId').equals(vocabItem.id).first()
+      if (!existingState) {
+        // Calculate initial memory state based on dictation performance
+        const relatedSessions = dictationSessions.filter(session =>
+          session.results.some(result => result.vocabularyItemId === vocabItem.id)
+        )
+
+        const allResults = relatedSessions.flatMap(session => session.results)
+        const vocabResults = allResults.filter(result => result.vocabularyItemId === vocabItem.id)
+
+        let initialMemoryLevel = 0
+        let initialDifficultyScore = 5 // default difficulty
+        // eslint-disable-next-line prefer-const
+        let totalAttempts = vocabResults.length
+        // eslint-disable-next-line prefer-const
+        let correctAttempts = vocabResults.filter(r => r.isCorrect).length
+
+        if (totalAttempts > 0) {
+          const accuracy = correctAttempts / totalAttempts
+          // Calculate initial memory level based on performance
+          if (accuracy >= 0.9) initialMemoryLevel = 2
+          else if (accuracy >= 0.7) initialMemoryLevel = 1
+          else initialMemoryLevel = 0
+
+          // Calculate difficulty score based on error frequency
+          const errorRate = 1 - accuracy
+          initialDifficultyScore = Math.min(10, Math.round(errorRate * 10 + (totalAttempts > 5 ? 2 : 0)))
+        }
+
+        const now = new Date()
+        const nextReviewDate = new Date(now.getTime() + 24 * 60 * 60 * 1000) // Next day
+
+        const memoryState: MemoryState = {
+          id: crypto.randomUUID(),
+          vocabularyItemId: vocabItem.id,
+          memoryLevel: initialMemoryLevel,
+          lastReviewDate: now,
+          nextReviewDate,
+          errorCount: totalAttempts - correctAttempts,
+          successStreak: correctAttempts > 0 ? 1 : 0,
+          difficultyScore: initialDifficultyScore,
+          createdAt: now,
+          updatedAt: now
+        }
+
+        await db.memoryStates.add(memoryState)
+      }
+    }
+
+    console.log(`Initialized memory states for ${vocabularyItems.length} vocabulary items`)
+  } catch (error) {
+    console.error('Error initializing memory states:', error)
+  }
+}
+
+export const memoryStateService = {
+  async getMemoryStateByVocabularyId(vocabularyItemId: string): Promise<MemoryState | undefined> {
+    return await db.memoryStates.where('vocabularyItemId').equals(vocabularyItemId).first()
+  },
+
+  async getMemoryStatesByVocabularyIds(vocabularyItemIds: string[]): Promise<MemoryState[]> {
+    return await db.memoryStates.where('vocabularyItemId').anyOf(vocabularyItemIds).toArray()
+  },
+
+  async getAllMemoryStates(): Promise<MemoryState[]> {
+    return await db.memoryStates.toArray()
+  },
+
+  async createMemoryState(memoryState: Omit<MemoryState, 'id' | 'createdAt' | 'updatedAt'>): Promise<MemoryState> {
+    const now = new Date()
+    const id = crypto.randomUUID()
+
+    const newState: MemoryState = {
+      ...memoryState,
+      id,
+      createdAt: now,
+      updatedAt: now
+    }
+
+    await db.memoryStates.add(newState)
+    return newState
+  },
+
+  async updateMemoryState(id: string, updates: Partial<Omit<MemoryState, 'id' | 'createdAt'>>): Promise<MemoryState | undefined> {
+    const existing = await db.memoryStates.get(id)
+    if (!existing) return undefined
+
+    const updatedState: MemoryState = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date()
+    }
+
+    await db.memoryStates.update(id, updatedState)
+    return updatedState
+  },
+
+  async getOverdueMemoryStates(limit: number = 50): Promise<MemoryState[]> {
+    const now = new Date()
+    const states = await db.memoryStates
+      .where('nextReviewDate').belowOrEqual(now)
+      .limit(limit)
+      .toArray()
+    return states.sort((a, b) => a.nextReviewDate.getTime() - b.nextReviewDate.getTime())
+  },
+
+  async getMemoryStatesByUnit(unitId: string): Promise<MemoryState[]> {
+    const vocabularyItems = await db.vocabularyItems.where('unitId').equals(unitId).toArray()
+    const vocabularyIds = vocabularyItems.map(item => item.id)
+    return await this.getMemoryStatesByVocabularyIds(vocabularyIds)
+  }
+}
+
+export const reviewSessionService = {
+  async createReviewSession(session: Omit<ReviewSession, 'id'>): Promise<ReviewSession> {
+    const id = crypto.randomUUID()
+    const now = new Date()
+
+    const newSession: ReviewSession = {
+      id,
+      settings: session.settings,
+      vocabularyItems: session.vocabularyItems,
+      startedAt: now
+    }
+
+    await db.reviewSessions.add(newSession)
+    return newSession
+  },
+
+  async completeReviewSession(id: string, results: ReviewResult[]): Promise<ReviewSession | undefined> {
+    const session = await db.reviewSessions.get(id)
+    if (!session) return undefined
+
+    const now = new Date()
+    const duration = Math.round((now.getTime() - session.startedAt.getTime()) / 1000)
+    const correctCount = results.filter(r => r.isCorrect).length
+    const accuracy = correctCount / results.length
+
+    const updatedSession = {
+      ...session,
+      completedAt: now,
+      duration,
+      accuracy
+    } as ReviewSession
+
+    await db.reviewSessions.update(id, updatedSession)
+
+    // Save review results
+    for (const result of results) {
+      await db.reviewResults.add(result)
+    }
+
+    return updatedSession
+  },
+
+  async getReviewSessionById(id: string): Promise<ReviewSession | undefined> {
+    const session = await db.reviewSessions.get(id)
+    if (!session) return undefined
+
+    return {
+      ...session,
+      startedAt: new Date(session.startedAt),
+      completedAt: session.completedAt ? new Date(session.completedAt) : undefined
+    } as ReviewSession
+  },
+
+  async getAllReviewSessions(): Promise<ReviewSession[]> {
+    const sessions = await db.reviewSessions
+      .toCollection()
+      .toArray()
+
+    return sessions
+      .map(session => ({
+        ...session,
+        startedAt: new Date(session.startedAt),
+        completedAt: session.completedAt ? new Date(session.completedAt) : undefined
+      } as ReviewSession))
+      .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime())
+  },
+
+  async getReviewResultsBySession(sessionId: string): Promise<ReviewResult[]> {
+    return await db.reviewResults.where('reviewSessionId').equals(sessionId).toArray()
+  },
+
+  async deleteReviewSession(id: string): Promise<void> {
+    // Delete the session and all its results
+    await db.transaction('rw', db.reviewSessions, db.reviewResults, async () => {
+      await db.reviewResults.where('reviewSessionId').equals(id).delete()
+      await db.reviewSessions.delete(id)
+    })
+  }
+}
+
+export const reviewResultService = {
+  async getReviewResultsByVocabularyId(vocabularyItemId: string): Promise<ReviewResult[]> {
+    const results = await db.reviewResults.where('vocabularyItemId').equals(vocabularyItemId).toArray()
+    return results.sort((a, b) => new Date(b.reviewSessionId).getTime() - new Date(a.reviewSessionId).getTime())
+  },
+
+  async getReviewResultsBySession(sessionId: string): Promise<ReviewResult[]> {
+    return await db.reviewResults.where('reviewSessionId').equals(sessionId).toArray()
   }
 }

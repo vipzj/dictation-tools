@@ -14,6 +14,11 @@
         <DictationSettings />
       </div>
 
+      <!-- Review Settings Section -->
+      <div class="col-12">
+        <ReviewSettings />
+      </div>
+
       <!-- Data Statistics Section -->
       <div class="col-12">
         <q-card flat bordered class="q-pa-md">
@@ -92,6 +97,7 @@ import FileUpload from 'components/FileUpload.vue';
 import ClearDataButton from 'components/ClearDataButton.vue';
 import QuickInitializeButton from 'components/QuickInitializeButton.vue';
 import DictationSettings from 'components/DictationSettings.vue';
+import ReviewSettings from 'components/ReviewSettings.vue';
 import { dataManager } from 'src/services/dataManager';
 import type { InitializationStats } from 'src/types/initializer';
 

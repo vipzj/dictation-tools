@@ -2,6 +2,7 @@ import type { Tag } from './tag';
 import type { Unit, VocabularyItem } from './unit';
 import type { DictationSession } from './dictation';
 import type { DictationSettings } from './dictation';
+import type { ReviewSettings } from './review';
 
 export interface DataSection {
   name: string;
@@ -12,6 +13,7 @@ export interface DataSection {
 
 export interface AppSettings {
   dictation: DictationSettings;
+  review: ReviewSettings;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -19,6 +21,22 @@ export const DEFAULT_SETTINGS: AppSettings = {
     playCount: 2,
     interval: 3,
     intraWordInterval: 1.0
+  },
+  review: {
+    wordCount: 15,
+    difficultyFilter: 'all',
+    maxDailyReviews: 30,
+    units: [],
+    playCount: 2,
+    interval: 3,
+    intraWordInterval: 1.0,
+    autoPlayAudio: true,
+    showMemoryLevel: true,
+    showProgress: true,
+    adaptiveDifficulty: true,
+    algorithmType: 'ebbinghaus',
+    intervalMultiplier: 1.0,
+    forgettingFactor: 0.5
   }
 } as const;
 
