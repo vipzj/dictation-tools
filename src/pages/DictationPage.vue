@@ -2,8 +2,8 @@
   <q-page padding>
     <div class="row q-gutter-md">
       <div class="col-12">
-        <div class="text-h4 q-mb-md">听写练习</div>
-        <div class="text-subtitle1 q-mb-lg">选择一个单元开始听写练习</div>
+        <div class="text-h4 q-mb-md">{{ $t('dictationPage.title') }}</div>
+        <div class="text-subtitle1 q-mb-lg">{{ $t('dictationPage.description') }}</div>
       </div>
 
       <!-- Search and Filter Controls -->
@@ -13,7 +13,7 @@
             <div class="col-12 col-md-6">
               <q-input
                 v-model="searchQuery"
-                label="搜索单元名称"
+                :label="$t('dictationPage.searchUnits')"
                 outlined
                 clearable
                 debounce="300"
@@ -27,7 +27,7 @@
               <q-select
                 v-model="selectedTagIds"
                 :options="tagOptions"
-                label="按标签筛选"
+                :label="$t('dictationPage.filterByTags')"
                 outlined
                 clearable
                 multiple
@@ -47,7 +47,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="col-12 text-center">
         <q-spinner-dots size="40px" color="primary" />
-        <div class="q-mt-sm">加载中...</div>
+        <div class="q-mt-sm">{{ $t('common.loading') }}</div>
       </div>
 
       <!-- Error State -->
@@ -58,7 +58,7 @@
           </template>
           {{ error }}
           <template v-slot:action>
-            <q-btn flat label="重试" @click="loadUnits" />
+            <q-btn flat :label="$t('common.retry')" @click="loadUnits" />
           </template>
         </q-banner>
       </div>
@@ -66,12 +66,12 @@
       <!-- Empty State -->
       <div v-else-if="filteredUnits.length === 0" class="col-12 text-center">
         <div class="text-h6 text-grey-7 q-mb-md">
-          {{ searchQuery || selectedTagIds?.length ? '没有找到匹配的单元' : '还没有创建任何单元' }}
+          {{ searchQuery || selectedTagIds?.length ? $t('dictationPage.noUnitsFound') : $t('dictationPage.noUnitsAvailable') }}
         </div>
         <q-btn
           v-if="!searchQuery && !selectedTagIds?.length"
           color="primary"
-          label="创建单元"
+          :label="$t('dictationPage.createUnit')"
           :to="{ name: 'units' }"
         />
       </div>
@@ -93,7 +93,7 @@
               <q-card-section>
                 <div class="text-h6">{{ unit.name }}</div>
                 <div class="text-subtitle2 text-grey-6 q-mb-sm">
-                  {{ unit.vocabularyCount }} 个词汇
+                  {{ $t('unitManagement.totalWords') }}: {{ unit.vocabularyCount }}
                 </div>
                 <div class="row q-gutter-xs">
                   <q-chip
@@ -109,7 +109,7 @@
               </q-card-section>
               <q-card-section class="q-pt-none">
                 <div class="text-caption text-grey-7">
-                  {{ unit.chineseCount }} 中文 · {{ unit.englishCount }} English
+                  {{ unit.chineseCount }} {{ $t('unitManagement.chineseWords') }} · {{ unit.englishCount }} {{ $t('unitManagement.englishTerms') }}
                 </div>
               </q-card-section>
             </q-card>
@@ -143,6 +143,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { unitService, vocabularyService, unitTagService } from '../services/indexeddb'
 import { tagService } from '../services/indexeddb'
 import type { UnitWithVocabularyCount } from '../types/unit'
@@ -170,6 +171,9 @@ const completedSessionId = ref<string | null>(null)
 // Data
 const units = ref<UnitWithVocabularyCount[]>([])
 const tags = ref<Tag[]>([])
+
+// I18n
+const { t } = useI18n()
 
 // Computed
 const tagOptions = computed(() => {
@@ -240,9 +244,9 @@ const loadUnits = async () => {
 
     // Handle database schema errors specifically
     if (err instanceof Error && err.message.includes('schema')) {
-      error.value = '数据库架构需要更新，请刷新页面'
+      error.value = t('dictationPage.databaseSchemaError')
     } else {
-      error.value = '加载单元失败，请重试'
+      error.value = t('dictationPage.loadUnitsError')
     }
   } finally {
     loading.value = false

@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div v-if="isLoading" class="column items-center justify-center" style="min-height: 400px;">
       <q-spinner-dots size="40px" color="primary" class="q-mb-md" />
-      <div class="text-h6 text-grey-7">加载统计数据中...</div>
+      <div class="text-h6 text-grey-7">{{ $t('dashboard.loadingStats') }}</div>
     </div>
 
     <!-- Dashboard Content -->
@@ -42,7 +42,7 @@
       <q-dialog v-model="showSettings" persistent>
         <q-card style="min-width: 500px;">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">仪表板设置</div>
+            <div class="text-h6">{{ $t('dashboard.dashboardSettings') }}</div>
             <q-space />
             <q-btn flat round dense icon="close" @click="showSettings = false" />
           </q-card-section>
@@ -51,17 +51,17 @@
 
           <q-card-section class="column q-gutter-md">
             <div>
-              <div class="text-subtitle2 q-mb-sm">刷新设置</div>
+              <div class="text-subtitle2 q-mb-sm">{{ $t('dashboard.refreshSettings') }}</div>
               <div class="row items-center q-gutter-md">
                 <q-toggle
                   v-model="dashboardConfig.enableAutoRefresh"
-                  label="自动刷新"
+                  :label="$t('dashboard.autoRefresh')"
                   color="primary"
                 />
                 <q-input
                   v-model.number="dashboardConfig.refreshInterval"
                   type="number"
-                  label="刷新间隔（秒）"
+                  :label="$t('dashboard.refreshInterval')"
                   outlined
                   dense
                   style="width: 150px"
@@ -74,21 +74,21 @@
             </div>
 
             <div>
-              <div class="text-subtitle2 q-mb-sm">显示设置</div>
+              <div class="text-subtitle2 q-mb-sm">{{ $t('dashboard.displaySettings') }}</div>
               <div class="column q-gutter-sm">
                 <q-toggle
                   v-model="dashboardConfig.enableAnimations"
-                  label="启用动画效果"
+                  :label="$t('dashboard.enableAnimations')"
                   color="primary"
                 />
                 <q-toggle
                   v-model="dashboardConfig.showDetailedStats"
-                  label="显示详细统计"
+                  :label="$t('dashboard.showDetailedStats')"
                   color="primary"
                 />
                 <q-toggle
                   v-model="dashboardConfig.compactMode"
-                  label="紧凑模式"
+                  :label="$t('dashboard.compactMode')"
                   color="primary"
                 />
               </div>
@@ -98,8 +98,8 @@
           <q-separator />
 
           <q-card-actions align="right">
-            <q-btn flat label="取消" @click="showSettings = false" />
-            <q-btn color="primary" label="保存" @click="saveSettings" />
+            <q-btn flat :label="$t('dashboard.cancel')" @click="showSettings = false" />
+            <q-btn color="primary" :label="$t('dashboard.save')" @click="saveSettings" />
           </q-card-actions>
         </q-card>
       </q-dialog>

@@ -2,8 +2,8 @@
   <q-page padding>
     <div class="row q-gutter-md">
       <div class="col-12">
-        <div class="text-h4 q-mb-md">复习历史记录</div>
-        <div class="text-subtitle1 q-mb-lg">查看和管理您的所有复习练习记录</div>
+        <div class="text-h4 q-mb-md">{{ $t('reviewHistory.title') }}</div>
+        <div class="text-subtitle1 q-mb-lg">{{ $t('reviewHistory.description') }}</div>
       </div>
 
       <!-- Search and Filter Controls -->

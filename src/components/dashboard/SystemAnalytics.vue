@@ -1,6 +1,6 @@
 <template>
   <div class="system-analytics">
-    <div class="text-h6 q-mb-md">系统分析</div>
+    <div class="text-h6 q-mb-md">{{ $t('dashboard.systemAnalyticsTitle') }}</div>
 
     <!-- System Health Overview -->
     <div class="row q-gutter-md q-mb-lg">
@@ -9,14 +9,14 @@
           <q-card-section>
             <div class="text-subtitle2 q-mb-md flex items-center">
               <q-icon name="monitor_heart" color="primary" class="q-mr-sm" />
-              系统健康状态
+              {{ $t('dashboard.systemHealth') }}
             </div>
 
             <div class="row q-gutter-md">
               <div class="col-12">
                 <div class="health-metric">
                   <div class="flex items-center justify-between q-mb-sm">
-                    <span>系统性能评分</span>
+                    <span>{{ $t('dashboard.performanceScoreLabel') }}</span>
                     <span class="text-weight-bold" :class="getPerformanceScoreColor()">
                       {{ dashboardStats.system.performanceScore }}/100
                     </span>
@@ -33,7 +33,7 @@
               <div class="col-12">
                 <div class="health-metric">
                   <div class="flex items-center justify-between q-mb-sm">
-                    <span>错误率</span>
+                    <span>{{ $t('dashboard.errorRateLabel') }}</span>
                     <span class="text-weight-bold" :class="getErrorRateColor()">
                       {{ Math.round(dashboardStats.system.errorRate) }}%
                     </span>
@@ -50,7 +50,7 @@
               <div class="col-12">
                 <div class="health-metric">
                   <div class="flex items-center justify-between">
-                    <span>系统状态</span>
+                    <span>{{ $t('dashboard.systemStatus') }}</span>
                     <q-chip
                       :color="getSystemHealthChipColor()"
                       :icon="getSystemHealthIcon()"
@@ -70,7 +70,7 @@
           <q-card-section>
             <div class="text-subtitle2 q-mb-md flex items-center">
               <q-icon name="storage" color="secondary" class="q-mr-sm" />
-              存储分析
+              {{ $t('dashboard.storageAnalysis') }}
             </div>
 
             <div class="row q-gutter-md">
@@ -126,7 +126,7 @@
           <q-card-section>
             <div class="text-subtitle2 q-mb-md flex items-center">
               <q-icon name="insights" color="info" class="q-mr-sm" />
-              使用模式分析
+              {{ $t('dashboard.usagePatterns') }}
             </div>
 
             <div class="row q-gutter-md">
@@ -183,7 +183,7 @@
           <q-card-section>
             <div class="text-subtitle2 q-mb-md flex items-center">
               <q-icon name="lightbulb" color="warning" class="q-mr-sm" />
-              系统建议
+              {{ $t('dashboard.systemRecommendations') }}
             </div>
 
             <div class="row q-gutter-md">
@@ -212,6 +212,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import type { DashboardStats } from 'src/types/dashboard'
 
 interface Props {
@@ -219,6 +220,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 function getPerformanceScoreColor(): string {
   const score = props.dashboardStats.system.performanceScore
@@ -260,14 +262,14 @@ function getSystemHealthChipColor(): string {
 
 function getSystemHealthLabel(): string {
   const score = props.dashboardStats.system.performanceScore
-  if (score >= 90) return '优秀'
-  if (score >= 75) return '良好'
-  if (score >= 60) return '一般'
-  return '需改进'
+  if (score >= 90) return t('dashboard.excellent')
+  if (score >= 75) return t('dashboard.good')
+  if (score >= 60) return t('dashboard.average')
+  return t('dashboard.needsImprovement')
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('zh-CN')
+  return date.toLocaleDateString(undefined)
 }
 
 function getRelativeTime(date: Date): string {
@@ -277,12 +279,12 @@ function getRelativeTime(date: Date): string {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return '刚刚'
-  if (diffMins < 60) return `${diffMins}分钟前`
-  if (diffHours < 24) return `${diffHours}小时前`
-  if (diffDays < 7) return `${diffDays}天前`
+  if (diffMins < 1) return t('dashboard.timeFormats.justNow')
+  if (diffMins < 60) return t('dashboard.timeFormats.minutesAgo', { count: diffMins })
+  if (diffHours < 24) return t('dashboard.timeFormats.hoursAgo', { count: diffHours })
+  if (diffDays < 7) return t('dashboard.timeFormats.daysAgo', { count: diffDays })
 
-  return date.toLocaleDateString('zh-CN')
+  return date.toLocaleDateString(undefined)
 }
 
 function formatTime(minutes: number): string {
@@ -303,10 +305,9 @@ function getUsageIntensity(): string {
   const sessions = props.dashboardStats.learning.totalSessions
   const timePerSession = props.dashboardStats.learning.totalPracticeTime / Math.max(1, sessions)
 
-  if (timePerSession >= 30) return '高强度'
-  if (timePerSession >= 15) return '中等强度'
-  if (timePerSession >= 5) return '轻度'
-  return '轻度'
+  if (timePerSession >= 30) return t('dashboard.high')
+  if (timePerSession >= 15) return t('dashboard.medium')
+  return t('dashboard.low')
 }
 
 function getActivityChipColor(): string {
@@ -327,11 +328,11 @@ function getActivityIcon(): string {
 
 function getActivityLabel(): string {
   const daysSinceLastActivity = getDaysSinceLastActivity()
-  if (daysSinceLastActivity === 0) return '活跃用户'
-  if (daysSinceLastActivity <= 1) return '近期活跃'
-  if (daysSinceLastActivity <= 7) return '定期使用'
-  if (daysSinceLastActivity <= 30) return '偶尔使用'
-  return '长期未用'
+  if (daysSinceLastActivity === 0) return t('dashboard.activeUser')
+  if (daysSinceLastActivity <= 1) return t('dashboard.recentActive')
+  if (daysSinceLastActivity <= 7) return t('dashboard.regularUser')
+  if (daysSinceLastActivity <= 30) return t('dashboard.occasionalUser')
+  return t('dashboard.longTimeInactive')
 }
 
 function getDaysSinceLastActivity(): number {
@@ -347,8 +348,8 @@ function getSystemRecommendations(): Array<{ title: string; description: string;
   // Performance recommendations
   if (stats.system.performanceScore < 60) {
     recommendations.push({
-      title: '性能优化',
-      description: '系统性能较低，建议优化数据结构或减少缓存',
+      title: t('dashboard.performanceOptimization'),
+      description: t('dashboard.performanceDesc'),
       icon: 'speed',
       color: 'negative'
     })
@@ -357,8 +358,8 @@ function getSystemRecommendations(): Array<{ title: string; description: string;
   // Error rate recommendations
   if (stats.system.errorRate > 20) {
     recommendations.push({
-      title: '错误率过高',
-      description: '学习正确率较低，建议加强基础练习',
+      title: t('dashboard.highErrorRate'),
+      description: t('dashboard.errorRateDesc'),
       icon: 'error',
       color: 'negative'
     })
@@ -368,8 +369,8 @@ function getSystemRecommendations(): Array<{ title: string; description: string;
   const daysSinceLastActivity = getDaysSinceLastActivity()
   if (daysSinceLastActivity > 7 && stats.learning.totalSessions > 0) {
     recommendations.push({
-      title: '保持学习习惯',
-      description: '建议每周至少进行2-3次练习',
+      title: t('dashboard.maintainHabit'),
+      description: t('dashboard.habitDesc'),
       icon: 'schedule',
       color: 'warning'
     })
@@ -379,8 +380,8 @@ function getSystemRecommendations(): Array<{ title: string; description: string;
   const dbSize = parseFloat(stats.system.databaseSize.replace(/[^\d.]/g, ''))
   if (dbSize > 100) { // 100MB
     recommendations.push({
-      title: '存储空间管理',
-      description: '数据库较大，建议清理历史数据或优化存储',
+      title: t('dashboard.storageManagement'),
+      description: t('dashboard.storageDesc'),
       icon: 'storage',
       color: 'info'
     })
@@ -389,8 +390,8 @@ function getSystemRecommendations(): Array<{ title: string; description: string;
   // Positive feedback
   if (recommendations.length === 0) {
     recommendations.push({
-      title: '系统运行良好',
-      description: '所有指标都在正常范围内，继续保持！',
+      title: t('dashboard.systemRunningWell'),
+      description: t('dashboard.runningWellDesc'),
       icon: 'thumb_up',
       color: 'positive'
     })

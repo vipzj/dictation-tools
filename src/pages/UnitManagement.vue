@@ -3,9 +3,9 @@
     <!-- Page Header -->
     <div class="row q-mb-md">
       <div class="col-12">
-        <div class="text-h4 text-weight-bold q-mb-md">Unit Management</div>
+        <div class="text-h4 text-weight-bold q-mb-md">{{ $t('unitManagement.title') }}</div>
         <div class="text-subtitle1 text-grey-7 q-mb-lg">
-          Manage your vocabulary units with Chinese words and English terms
+          {{ $t('unitManagement.description') }}
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
           v-model="searchQuery"
           outlined
           debounce="300"
-          placeholder="Search units by name..."
+          :placeholder="$t('unitManagement.searchPlaceholder')"
           clearable
           @update:model-value="handleSearch"
         >
@@ -36,7 +36,7 @@
           option-value="id"
           option-label="name"
           clearable
-          placeholder="Filter by tags..."
+          :placeholder="$t('unitManagement.filterByTags')"
           emit-value
           map-options
           @update:model-value="handleTagFilter"
@@ -76,7 +76,7 @@
                   round
                   @click.stop="editUnit(unit)"
                 >
-                  <q-tooltip>Edit unit</q-tooltip>
+                  <q-tooltip>{{ $t('unitManagement.editTooltip') }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -86,7 +86,7 @@
                   round
                   @click.stop="deleteUnit(unit)"
                 >
-                  <q-tooltip>Delete unit</q-tooltip>
+                  <q-tooltip>{{ $t('unitManagement.deleteTooltip') }}</q-tooltip>
                 </q-btn>
               </div>
             </div>
@@ -97,7 +97,7 @@
                   color="primary"
                   text-color="white"
                   icon="school"
-                  :label="`${unit.vocabularyCount} total`"
+                  :label="`${unit.vocabularyCount} ${$t('unitManagement.totalWords')}`"
                   size="sm"
                 />
               </div>
@@ -106,7 +106,7 @@
                   color="red"
                   text-color="white"
                   icon="translate"
-                  :label="`${unit.chineseCount} 中文`"
+                  :label="`${unit.chineseCount} ${$t('unitManagement.chineseWords')}`"
                   size="sm"
                 />
               </div>
@@ -115,7 +115,7 @@
                   color="blue"
                   text-color="white"
                   icon="language"
-                  :label="`${unit.englishCount} English`"
+                  :label="`${unit.englishCount} ${$t('unitManagement.englishTerms')}`"
                   size="sm"
                 />
               </div>
@@ -139,13 +139,13 @@
       <!-- Empty State -->
       <div v-if="filteredUnits.length === 0" class="col-12 text-center">
         <div class="text-h5 text-grey-6 q-mb-md">
-          {{ searchQuery || selectedTagIds.length > 0 ? 'No units found' : 'No units yet' }}
+          {{ searchQuery || selectedTagIds.length > 0 ? $t('unitManagement.noUnitsFound') : $t('unitManagement.noUnits') }}
         </div>
         <div class="text-body1 text-grey-5">
           {{
             searchQuery || selectedTagIds.length > 0
-              ? 'Try adjusting your search or filters'
-              : 'Create your first unit to get started'
+              ? $t('unitManagement.tryAdjustingFilters')
+              : $t('unitManagement.createFirstUnit')
           }}
         </div>
       </div>
@@ -154,7 +154,7 @@
     <!-- Floating Action Button -->
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn fab color="primary" icon="add" @click="createUnit">
-        <q-tooltip> Create New Unit </q-tooltip>
+        <q-tooltip>{{ $t('unitManagement.createUnit') }}</q-tooltip>
       </q-btn>
     </q-page-sticky>
 
@@ -172,18 +172,17 @@
         <q-card-section class="row items-center">
           <q-avatar icon="delete" color="negative" text-color="white" />
           <div class="q-ml-sm">
-            <div class="text-h6">Delete Unit</div>
+            <div class="text-h6">{{ $t('unitManagement.deleteUnit') }}</div>
           </div>
         </q-card-section>
 
         <q-card-section v-if="unitToDelete">
-          Are you sure you want to delete the unit "{{ unitToDelete.name }}"? This will permanently
-          remove the unit and all its vocabulary items.
+          {{ $t('unitManagement.deleteUnitConfirmation', { name: unitToDelete.name }) }}
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-          <q-btn flat label="Delete" color="negative" @click="confirmDelete" />
+          <q-btn flat :label="$t('common.cancel')" color="primary" v-close-popup />
+          <q-btn flat :label="$t('common.delete')" color="negative" @click="confirmDelete" />
         </q-card-actions>
       </q-card>
     </q-dialog>

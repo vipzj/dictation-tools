@@ -2,8 +2,8 @@
   <q-page padding>
     <div class="row q-gutter-md">
       <div class="col-12">
-        <div class="text-h4 q-mb-md">听写历史记录</div>
-        <div class="text-subtitle1 q-mb-lg">查看和管理您的所有听写练习记录</div>
+        <div class="text-h4 q-mb-md">{{ $t('dictationHistory.title') }}</div>
+        <div class="text-subtitle1 q-mb-lg">{{ $t('dictationHistory.description') }}</div>
       </div>
 
       <!-- Search and Filter Controls -->
@@ -13,7 +13,7 @@
             <div class="col-12 col-md-4">
               <q-input
                 v-model="searchQuery"
-                label="搜索单元名称"
+                :label="$t('dictationHistory.searchUnits')"
                 outlined
                 clearable
                 debounce="300"
@@ -27,7 +27,7 @@
               <q-select
                 v-model="selectedUnitIds"
                 :options="unitOptions"
-                label="按单元筛选"
+                :label="$t('dictationHistory.filterByUnits')"
                 outlined
                 clearable
                 multiple
@@ -45,7 +45,7 @@
               <q-select
                 v-model="selectedTagIds"
                 :options="tagOptions"
-                label="按标签筛选"
+                :label="$t('dictationHistory.filterByTags')"
                 outlined
                 clearable
                 multiple
@@ -71,7 +71,7 @@
               <q-select
                 v-model="dateRangeType"
                 :options="dateRangeOptions"
-                label="时间范围"
+                :label="$t('dictationHistory.timeRange')"
                 outlined
                 clearable
                 emit-value
@@ -98,7 +98,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="col-12 text-center">
         <q-spinner-dots size="40px" color="primary" />
-        <div class="q-mt-sm">加载中...</div>
+        <div class="q-mt-sm">{{ $t('dictationHistory.loading') }}</div>
       </div>
 
       <!-- Error State -->
@@ -109,7 +109,7 @@
           </template>
           {{ error }}
           <template v-slot:action>
-            <q-btn flat label="重试" @click="loadHistory" />
+            <q-btn flat :label="$t('dictationHistory.retry')" @click="loadHistory" />
           </template>
         </q-banner>
       </div>
@@ -117,19 +117,19 @@
       <!-- Empty State -->
       <div v-else-if="filteredSessions.length === 0" class="col-12 text-center">
         <div class="text-h6 text-grey-7 q-mb-md">
-          {{ hasActiveFilters ? '没有找到匹配的记录' : '还没有听写记录' }}
+          {{ hasActiveFilters ? $t('dictationHistory.noRecordsFound') : $t('dictationHistory.noRecords') }}
         </div>
         <q-btn
           v-if="!hasActiveFilters"
           color="primary"
-          label="开始听写"
+          :label="$t('dictationHistory.startDictation')"
           :to="{ name: 'dictation' }"
         />
         <q-btn
           v-else
           flat
           color="primary"
-          label="清除筛选条件"
+          :label="$t('dictationHistory.clearFilters')"
           @click="clearFilters"
         />
       </div>
@@ -183,7 +183,7 @@
                   </div>
                   <div>
                     <q-icon name="headphones" size="sm" class="q-mr-xs" />
-                    {{ session.results.length }} 个词汇
+                    {{ session.results.length }} {{ $t('dictationHistory.vocabularyCount') }}
                   </div>
                 </div>
               </q-card-section>
@@ -193,7 +193,7 @@
                   flat
                   color="negative"
                   icon="delete"
-                  label="删除"
+                  :label="$t('dictationHistory.deleteRecord')"
                   @click.stop="confirmDelete(session)"
                 />
               </q-card-actions>
@@ -207,27 +207,27 @@
     <q-dialog v-model="showDeleteDialog" persistent>
       <q-card>
         <q-card-section>
-          <div class="text-h6">删除听写记录</div>
+          <div class="text-h6">{{ $t('dictationHistory.deleteDialogTitle') }}</div>
         </q-card-section>
 
         <q-card-section v-if="sessionToDelete">
-          <div>确定要删除以下听写记录吗？</div>
+          <div>{{ $t('dictationHistory.deleteDialogMessage') }}</div>
           <div class="q-mt-sm text-weight-bold">{{ sessionToDelete.unitName }}</div>
           <div class="text-caption text-grey-6">
             {{ formatDate(sessionToDelete.completedAt) }} ·
-            准确率 {{ displayAccuracy(sessionToDelete.accuracy) }} ·
-            {{ sessionToDelete.results.length }} 个词汇
+            {{ $t('dictationHistory.deleteDialogDetails') }} {{ displayAccuracy(sessionToDelete.accuracy) }} ·
+            {{ sessionToDelete.results.length }} {{ $t('dictationHistory.vocabularyCount') }}
           </div>
           <div class="text-negative q-mt-sm">
-            ⚠️ 此操作无法撤销
+            {{ $t('dictationHistory.deleteDialogWarning') }}
           </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" @click="showDeleteDialog = false" />
+          <q-btn flat :label="$t('dictationHistory.cancel')" @click="showDeleteDialog = false" />
           <q-btn
             color="negative"
-            label="删除"
+            :label="$t('dictationHistory.delete')"
             :loading="deleting"
             @click="deleteSession"
           />
@@ -239,6 +239,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { dictationService, unitService, unitTagService, tagService } from '../services/indexeddb'
 import type { DictationSession } from '../types/dictation'
 import type { Unit } from '../types/unit'
@@ -261,17 +262,20 @@ const selectedTagIds = ref<string[]>([])
 const dateRangeType = ref<string>('')
 const customDateRange = ref<{ from?: string, to?: string }>({})
 
-const dateRangeOptions = [
-  { label: '今天', value: 'today' },
-  { label: '昨天', value: 'yesterday' },
-  { label: '本周', value: 'thisWeek' },
-  { label: '上周', value: 'lastWeek' },
-  { label: '本月', value: 'thisMonth' },
-  { label: '上月', value: 'lastMonth' },
-  { label: '最近7天', value: 'last7Days' },
-  { label: '最近30天', value: 'last30Days' },
-  { label: '自定义范围', value: 'custom' }
-]
+// I18n
+const { t } = useI18n()
+
+const dateRangeOptions = computed(() => [
+  { label: t('dictationHistoryFilters.today'), value: 'today' },
+  { label: t('dictationHistoryFilters.yesterday'), value: 'yesterday' },
+  { label: t('dictationHistoryFilters.thisWeek'), value: 'thisWeek' },
+  { label: t('dictationHistoryFilters.lastWeek'), value: 'lastWeek' },
+  { label: t('dictationHistoryFilters.thisMonth'), value: 'thisMonth' },
+  { label: t('dictationHistoryFilters.lastMonth'), value: 'lastMonth' },
+  { label: t('dictationHistoryFilters.last7Days'), value: 'last7Days' },
+  { label: t('dictationHistoryFilters.last30Days'), value: 'last30Days' },
+  { label: t('dictationHistoryFilters.customRange'), value: 'custom' }
+])
 
 // Dialog state
 const showDeleteDialog = ref(false)
@@ -433,7 +437,7 @@ const loadHistory = async () => {
     unitTagRelations.value = allUnitTagRelations
   } catch (err) {
     console.error('Failed to load dictation history:', err)
-    error.value = '加载历史记录失败，请重试'
+    error.value = t('dictationHistory.loadError')
   } finally {
     loading.value = false
   }
@@ -457,11 +461,11 @@ const formatAccuracy = (accuracy: number): number => {
 }
 
 const displayAccuracy = (accuracy: number): string => {
-  return `${formatAccuracy(accuracy)}%`
+  return `${formatAccuracy(accuracy)}${t('dictationHistory.accuracySuffix')}`
 }
 
 const formatDate = (date: Date): string => {
-  return new Date(date).toLocaleDateString('zh-CN', {
+  return new Date(date).toLocaleDateString(undefined, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -503,7 +507,7 @@ const deleteSession = async () => {
     sessionToDelete.value = null
   } catch (err) {
     console.error('Failed to delete session:', err)
-    error.value = '删除记录失败，请重试'
+    error.value = t('dictationHistory.deleteError')
   } finally {
     deleting.value = false
   }

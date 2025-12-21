@@ -2,32 +2,32 @@
   <q-page padding>
     <div class="row q-gutter-md">
       <div class="col-12">
-        <div class="text-h4 q-mb-md">复习练习</div>
-        <div class="text-subtitle1 q-mb-lg">复习系统<strong>基于独立词汇库</strong>，在听写中出错的词汇会自动加入复习库，帮助您精准掌握困难单词</div>
+        <div class="text-h4 q-mb-md">{{ $t('reviewPage.title') }}</div>
+        <div class="text-subtitle1 q-mb-lg" v-html="$t('reviewPage.description')"></div>
       </div>
 
       <!-- Review Settings Card -->
       <div class="col-12">
         <q-card flat bordered>
           <q-card-section>
-            <div class="text-h6 q-mb-md">复习设置</div>
+            <div class="text-h6 q-mb-md">{{ $t('reviewPage.reviewSettings') }}</div>
             <div class="row q-gutter-md">
               <div class="col-12 col-sm-6 col-md-3">
                 <q-input
                   v-model.number="reviewSettings.wordCount"
                   type="number"
-                  label="复习词汇数量"
+                  :label="$t('reviewPage.wordCount')"
                   outlined
                   min="1"
                   max="50"
-                  suffix="个"
+                  :suffix="$t('reviewPage.units.times')"
                 />
               </div>
               <div class="col-12 col-sm-6 col-md-3">
                 <q-select
                   v-model="reviewSettings.difficultyFilter"
                   :options="difficultyOptions"
-                  label="难度筛选"
+                  :label="$t('reviewPage.difficultyFilter')"
                   outlined
                   emit-value
                   map-options
@@ -37,7 +37,7 @@
                 <q-select
                   v-model="reviewSettings.focusType"
                   :options="focusTypeOptions"
-                  label="复习重点"
+                  :label="$t('reviewPage.focusType')"
                   outlined
                   emit-value
                   map-options
@@ -49,40 +49,40 @@
               </div>
               <!-- Audio Settings -->
               <div class="col-12 col-sm-6 col-md-4">
-                <div class="text-subtitle2 q-mb-sm">音频播放设置</div>
+                <div class="text-subtitle2 q-mb-sm">{{ $t('reviewPage.audioSettings') }}</div>
                 <div class="row q-gutter-sm">
                   <div class="col-12 col-md-4">
                     <q-input
                       v-model.number="reviewSettings.playCount"
                       type="number"
-                      label="播放次数"
+                      :label="$t('reviewPage.playCount')"
                       outlined
                       min="1"
                       max="5"
-                      suffix="次"
+                      :suffix="$t('reviewPage.units.times')"
                     />
                   </div>
                   <div class="col-12 col-md-4">
                     <q-input
                       v-model.number="reviewSettings.interval"
                       type="number"
-                      label="词语间隔"
+                      :label="$t('reviewPage.interval')"
                       outlined
                       min="1"
                       max="10"
-                      suffix="秒"
+                      :suffix="$t('reviewPage.units.seconds')"
                     />
                   </div>
                   <div class="col-12 col-md-4">
                     <q-input
                       v-model.number="reviewSettings.intraWordInterval"
                       type="number"
-                      label="内部间隔"
+                      :label="$t('reviewPage.intraWordInterval')"
                       outlined
                       min="0.5"
                       max="5"
                       step="0.5"
-                      suffix="秒"
+                      :suffix="$t('reviewPage.units.seconds')"
                     />
                   </div>
                 </div>
@@ -90,7 +90,7 @@
               <div class="col-12 col-sm-6 col-md-3">
                 <q-btn
                   color="primary"
-                  label="开始复习"
+                  :label="$t('reviewPage.startReview')"
                   size="lg"
                   class="full-height"
                   :loading="generatingSession"
@@ -107,30 +107,30 @@
       <div class="col-12">
         <q-card flat bordered>
           <q-card-section>
-            <div class="text-h6 q-mb-md">复习库统计</div>
+            <div class="text-h6 q-mb-md">{{ $t('reviewPage.statistics') }}</div>
             <div class="row q-gutter-md">
               <div class="col-12 col-sm-6 col-md-3">
                 <div class="text-center">
                   <div class="text-h4 text-primary">{{ reviewStatistics.totalReviews }}</div>
-                  <div class="text-caption text-grey-6">复习词汇总数</div>
+                  <div class="text-caption text-grey-6">{{ $t('reviewPage.totalReviews') }}</div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-3">
                 <div class="text-center">
                   <div class="text-h4 text-warning">{{ errorSummary.problematicWordsCount }}</div>
-                  <div class="text-caption text-grey-6">复习库词汇数</div>
+                  <div class="text-caption text-grey-6">{{ $t('reviewPage.reviewLibraryCount') }}</div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-3">
                 <div class="text-center">
                   <div class="text-h4 text-negative">{{ reviewStatistics.overdueWordsCount }}</div>
-                  <div class="text-caption text-grey-6">待复习词汇</div>
+                  <div class="text-caption text-grey-6">{{ $t('reviewPage.overdueWords') }}</div>
                 </div>
               </div>
               <div class="col-12 col-sm-6 col-md-3">
                 <div class="text-center">
                   <div class="text-h4 text-positive">{{ Math.round(reviewStatistics.averageAccuracy * 100) }}%</div>
-                  <div class="text-caption text-grey-6">复习准确率</div>
+                  <div class="text-caption text-grey-6">{{ $t('reviewPage.reviewAccuracy') }}</div>
                 </div>
               </div>
             </div>
@@ -142,7 +142,7 @@
       <div class="col-12">
         <q-card flat bordered>
           <q-card-section>
-            <div class="text-h6 q-mb-md">记忆水平分布</div>
+            <div class="text-h6 q-mb-md">{{ $t('reviewPage.memoryDistribution') }}</div>
             <div class="row q-gutter-md items-center">
               <div
                 v-for="(count, level) in reviewStatistics.wordsAtEachLevel"
@@ -160,7 +160,7 @@
                   </div>
                   <div class="col">
                     <div class="text-body2">{{ getMemoryLevelDescription(level) }}</div>
-                    <div class="text-caption text-grey-6">{{ count }} 个词汇</div>
+                    <div class="text-caption text-grey-6">{{ count }} {{ $t('reviewPage.wordsCount') }}</div>
                   </div>
                 </div>
               </div>
@@ -172,7 +172,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="col-12 text-center">
         <q-spinner-dots size="40px" color="primary" />
-        <div class="q-mt-sm">加载中...</div>
+        <div class="q-mt-sm">{{ $t('common.loading') }}</div>
       </div>
 
       <!-- Error State -->
@@ -183,7 +183,7 @@
           </template>
           {{ error }}
           <template v-slot:action>
-            <q-btn flat label="重试" @click="loadReviewData" />
+            <q-btn flat :label="$t('common.retry')" @click="loadReviewData" />
           </template>
         </q-banner>
       </div>
@@ -191,14 +191,13 @@
       <!-- No Vocabulary State -->
       <div v-else-if="!hasVocabularyForReview" class="col-12 text-center">
         <div class="text-h6 text-grey-7 q-mb-md">
-          还没有需要复习的词汇
+          {{ $t('reviewPage.noVocabularyForReview') }}
         </div>
-        <div class="text-body1 text-grey-6 q-mb-lg">
-          复习系统基于<strong>独立词汇库</strong>。请先进行听写练习，当您在听写中答错单词时，系统会自动将这些单词加入复习库。
+        <div class="text-body1 text-grey-6 q-mb-lg" v-html="$t('reviewPage.addVocabularyFirst')">
         </div>
         <q-btn
           color="primary"
-          label="开始听写练习"
+          :label="$t('reviewPage.startDictation')"
           :to="{ name: 'dictation' }"
         />
       </div>
@@ -222,6 +221,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { reviewService, memoryAlgorithmService, dictationErrorAnalyzer } from '../services/index'
 import type { ReviewSettings, ReviewStatistics, MemoryLevel } from '../types/review'
 import ReviewPracticeDialog from '../components/ReviewPracticeDialog.vue'
@@ -275,23 +275,26 @@ const showResultsDialog = ref(false)
 const currentReviewSessionId = ref<string | null>(null)
 const completedReviewSessionId = ref<string | null>(null)
 
+// I18n
+const { t } = useI18n()
+
 // Computed
 const hasVocabularyForReview = computed(() => {
   // 检查是否有任何复习词汇（不仅仅是不期）
   return errorSummary.value.problematicWordsCount > 0 || reviewStatistics.value.totalReviews > 0
 })
 
-const difficultyOptions = [
-  { label: '全部', value: 'all' },
-  { label: '简单', value: 'easy' },
-  { label: '困难', value: 'hard' }
-]
+const difficultyOptions = computed(() => [
+  { label: t('reviewOptions.difficulty.all'), value: 'all' },
+  { label: t('reviewOptions.difficulty.easy'), value: 'easy' },
+  { label: t('reviewOptions.difficulty.hard'), value: 'hard' }
+])
 
-const focusTypeOptions = [
-  { label: '全部错误词汇', value: 'all' },
-  { label: '严重错误词汇', value: 'hard' },
-  { label: '轻微错误词汇', value: 'easy' }
-]
+const focusTypeOptions = computed(() => [
+  { label: t('reviewOptions.focusType.all'), value: 'all' },
+  { label: t('reviewOptions.focusType.hard'), value: 'hard' },
+  { label: t('reviewOptions.focusType.easy'), value: 'easy' }
+])
 
 // Methods
 const loadReviewData = async () => {
@@ -319,7 +322,7 @@ const loadReviewData = async () => {
     reviewSettings.value = { ...recommendedSettings, focusType: 'all' }
   } catch (err) {
     console.error('Failed to load review data:', err)
-    error.value = '加载复习数据失败，请重试'
+    error.value = t('reviewPage.loadError')
   } finally {
     loading.value = false
   }
@@ -334,7 +337,7 @@ const startReviewSession = async () => {
     showReviewDialog.value = true
   } catch (err) {
     console.error('Failed to start review session:', err)
-    error.value = '开始复习失败，请重试'
+    error.value = t('reviewPage.startReviewError')
   } finally {
     generatingSession.value = false
   }

@@ -3,9 +3,9 @@
     <div class="row q-gutter-md">
       <!-- Page Title -->
       <div class="col-12">
-        <div class="text-h4 text-weight-bold q-mb-md">Settings</div>
+        <div class="text-h4 text-weight-bold q-mb-md">{{ $t('settings.title') }}</div>
         <div class="text-subtitle1 text-grey-7 q-mb-lg">
-          Manage your local data and application settings
+          {{ $t('settings.description') }}
         </div>
       </div>
 
@@ -25,7 +25,7 @@
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="analytics" class="q-mr-sm" />
-              Data Statistics
+              {{ $t('settings.dataStatistics') }}
             </div>
             <DataStats />
           </q-card-section>
@@ -38,7 +38,7 @@
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="storage" class="q-mr-sm" />
-              Data Management
+              {{ $t('settings.dataManagement') }}
             </div>
 
             <div class="row q-gutter-md">
