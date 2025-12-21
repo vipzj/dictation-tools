@@ -385,6 +385,14 @@ export const unitTagService = {
     await db.unitTags.delete(targetId)
   },
 
+  async getAllUnitTags(): Promise<Array<{unitId: string, tagId: string}>> {
+    const unitTags = await db.unitTags.toArray()
+    return unitTags.map(ut => ({
+      unitId: ut.unitId,
+      tagId: ut.tagId
+    }))
+  },
+
   async setUnitTags(unitId: string, tagIds: string[]): Promise<void> {
   try {
     // Ensure database is ready

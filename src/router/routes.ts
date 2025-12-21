@@ -10,6 +10,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'settings', name: 'settings', component: () => import('pages/Settings.vue') },
       { path: 'units', name: 'units', component: () => import('pages/UnitManagement.vue') },
       { path: 'dictation', name: 'dictation', component: () => import('pages/DictationPage.vue') },
+      { path: 'dictation-history', name: 'dictation-history', component: () => import('pages/DictationHistoryPage.vue') },
     ],
   },
 

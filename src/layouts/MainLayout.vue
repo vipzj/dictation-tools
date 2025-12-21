@@ -90,6 +90,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable :to="{ path: '/dictation-history' }" :active-class="'text-primary'">
+          <q-item-section avatar>
+            <q-icon name="history" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dictation History</q-item-label>
+            <q-item-label caption>View and manage practice history</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-separator class="q-my-md" />
 
         <q-item-label header> Essential Links </q-item-label>
