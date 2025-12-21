@@ -370,6 +370,64 @@ export default {
     }
   },
 
+  // Review Settings Component
+  reviewSettings: {
+    title: '复习设置',
+    wordCount: '每次复习词汇数量',
+    wordCountSuffix: '个',
+    wordCountHint: '建议 10-30 个词汇',
+    difficultyFilter: '默认难度筛选',
+    difficultyFilterHint: '自动筛选适合难度的词汇',
+    autoPlayAudio: '自动播放音频',
+    showMemoryLevel: '显示记忆水平',
+    showProgress: '显示复习进度',
+    adaptiveDifficulty: '自适应难度',
+    memoryAlgorithmTitle: '记忆算法设置',
+    algorithmType: '记忆算法',
+    algorithmTypeHint: '选择记忆强化算法',
+    intervalMultiplier: '间隔倍数',
+    intervalMultiplierHint: '调整复习间隔长度',
+    forgettingFactor: '遗忘因子',
+    forgettingFactorHint: '错误时的间隔缩减',
+    resetToDefaults: '重置为默认设置',
+    settingsSaved: '设置已保存',
+    saveSettingsFailed: '保存设置失败',
+    resetSuccess: '已重置为默认设置',
+    resetFailed: '重置设置失败',
+    difficultyOptions: {
+      all: '全部词汇',
+      easy: '简单词汇',
+      hard: '困难词汇'
+    },
+    algorithmOptions: {
+      ebbinghaus: '艾宾浩斯传统算法',
+      sm2: 'SuperMemo 2',
+      anki: 'Anki算法'
+    }
+  },
+
+  // Data Stats Component
+  dataStats: {
+    tags: '标签',
+    units: '单元',
+    vocabulary: '词汇',
+    sessions: '会话',
+    databaseSize: '数据库大小',
+    lastModified: '最后修改',
+    refresh: '刷新',
+    timeFormats: {
+      justNow: '刚刚',
+      minutesAgo: '{count}分钟前',
+      hoursAgo: '{count}小时前',
+      daysAgo: '{count}天前',
+      minutes: '{count}分钟',
+      hours: '{count}小时',
+      days: '{count}天'
+    },
+    storageLocation: 'IndexedDB (本地)',
+    never: '从未'
+  },
+
   // Dictation Page
   dictationPage: {
     title: '听写练习',
@@ -474,10 +532,12 @@ export default {
   reviewHistory: {
     title: '复习历史记录',
     description: '查看和管理您的所有复习练习记录，跟踪记忆巩固和掌握进度',
-    searchPlaceholder: '搜索复习记录...',
+    searchPlaceholder: '搜索复习记录',
     filterByAccuracy: '按准确率筛选',
     filterByMemoryLevel: '按记忆水平筛选',
     filterByDate: '按日期筛选',
+    timeRange: '时间范围',
+    customRange: '自定义',
     loading: '加载中...',
     retry: '重试',
     noRecordsFound: '没有找到匹配的记录',
@@ -488,43 +548,49 @@ export default {
     vocabularyCount: '个词汇',
     accuracySuffix: '%',
     memoryLevel: '记忆水平',
+    memoryLevelDistribution: '记忆水平分布',
+    practiceSession: '复习练习',
+    viewDetails: '查看详情',
+    deleteButton: '删除',
+    duration: '用时',
+    reviewCount: '复习词汇数',
+    accuracy: '准确率',
+    improvements: '提升',
+    sessionDetails: '复习练习详情',
+    sessionSummary: '练习概要',
+    reviewItemDetails: '复习词汇详情',
+    difficulty: '难度',
+    chinese: '中文',
+    english: 'English',
     deleteDialogTitle: '删除复习记录',
-    deleteDialogMessage: '确定要删除以下复习记录吗？',
-    deleteDialogDetails: '准确率',
-    deleteDialogWarning: '此操作无法撤销',
+    deleteDialogMessage: '确定要删除这条复习记录吗？',
+    deleteDialogWarning: '删除后将无法恢复，包括本次复习的所有记忆状态更新。',
     cancel: '取消',
-    delete: '删除',
-    loadError: '加载历史记录失败，请重试',
-    deleteError: '删除记录失败，请重试'
+    confirmDelete: '确定删除',
+    loadError: '加载复习历史失败，请重试',
+    deleteError: '删除复习记录失败，请重试',
+    recordDeleted: '复习记录已删除'
   },
   reviewHistoryFilters: {
     accuracy: {
       all: '全部准确率',
-      excellent: '优秀(90%+)',
-      good: '良好(70-89%)',
-      needsImprovement: '需改进(<70%)'
+      excellent: '优秀 (90%+)',
+      good: '良好 (70-89%)',
+      average: '及格 (50-69%)',
+      poor: '需要练习 (<50%)'
     },
     memoryLevel: {
       all: '全部记忆水平',
-      notLearned: '未掌握',
-      familiar: '初识',
-      recognized: '认识',
-      known: '熟悉',
-      mastered: '掌握',
-      proficient: '熟练',
-      advanced: '精通',
-      perfect: '完全掌握'
+      new: '新学词汇 (0-1)',
+      learning: '学习中 (2-3)',
+      familiar: '基本掌握 (4-5)',
+      mastered: '完全掌握 (6-7)'
     },
     dateRange: {
       today: '今天',
-      yesterday: '昨天',
-      thisWeek: '本周',
-      lastWeek: '上周',
-      thisMonth: '本月',
-      lastMonth: '上月',
-      last7Days: '最近7天',
-      last30Days: '最近30天',
-      customRange: '自定义范围'
+      week: '本周',
+      month: '本月',
+      custom: '自定义'
     }
   },
 

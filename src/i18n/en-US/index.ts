@@ -349,6 +349,85 @@ export default {
     rawDataViewer: 'Raw Data Viewer'
   },
 
+  // Dictation Settings Component
+  dictationSettings: {
+    title: 'Dictation Settings',
+    defaultPlayCount: 'Default Play Count',
+    defaultInterval: 'Default Word Interval',
+    defaultIntraWordInterval: 'Default Intra-word Interval',
+    playCountSuffix: 'times',
+    intervalSuffix: 'seconds',
+    intraWordIntervalTooltip: 'Pause between multiple plays of the same word',
+    intervalTooltip: 'Pause time between different words',
+    resetToDefaults: 'Reset to Defaults',
+    settingsSaved: 'Settings saved',
+    saveSettingsFailed: 'Failed to save settings',
+    resetSuccess: 'Settings reset to defaults',
+    resetFailed: 'Failed to reset settings',
+    validationRules: {
+      minInterval: 'Minimum interval is 0.5 seconds',
+      maxInterval: 'Maximum interval is 5 seconds'
+    }
+  },
+
+  // Review Settings Component
+  reviewSettings: {
+    title: 'Review Settings',
+    wordCount: 'Words per Review Session',
+    wordCountSuffix: 'words',
+    wordCountHint: 'Recommended 10-30 words',
+    difficultyFilter: 'Default Difficulty Filter',
+    difficultyFilterHint: 'Automatically filter words by difficulty',
+    autoPlayAudio: 'Auto Play Audio',
+    showMemoryLevel: 'Show Memory Level',
+    showProgress: 'Show Review Progress',
+    adaptiveDifficulty: 'Adaptive Difficulty',
+    memoryAlgorithmTitle: 'Memory Algorithm Settings',
+    algorithmType: 'Memory Algorithm',
+    algorithmTypeHint: 'Choose memory reinforcement algorithm',
+    intervalMultiplier: 'Interval Multiplier',
+    intervalMultiplierHint: 'Adjust review interval length',
+    forgettingFactor: 'Forgetting Factor',
+    forgettingFactorHint: 'Interval reduction on errors',
+    resetToDefaults: 'Reset to Defaults',
+    settingsSaved: 'Settings saved',
+    saveSettingsFailed: 'Failed to save settings',
+    resetSuccess: 'Settings reset to defaults',
+    resetFailed: 'Failed to reset settings',
+    difficultyOptions: {
+      all: 'All Words',
+      easy: 'Easy Words',
+      hard: 'Hard Words'
+    },
+    algorithmOptions: {
+      ebbinghaus: 'Ebbinghaus Traditional',
+      sm2: 'SuperMemo 2',
+      anki: 'Anki Algorithm'
+    }
+  },
+
+  // Data Stats Component
+  dataStats: {
+    tags: 'Tags',
+    units: 'Units',
+    vocabulary: 'Vocabulary',
+    sessions: 'Sessions',
+    databaseSize: 'Database Size',
+    lastModified: 'Last Modified',
+    refresh: 'Refresh',
+    timeFormats: {
+      justNow: 'Just now',
+      minutesAgo: '{count} minute ago',
+      hoursAgo: '{count} hour ago',
+      daysAgo: '{count} day ago',
+      minutes: '{count} minutes',
+      hours: '{count} hours',
+      days: '{count} days'
+    },
+    storageLocation: 'IndexedDB (Local)',
+    never: 'Never'
+  },
+
   // Dictation Page
   dictationPage: {
     title: 'Dictation Practice',
@@ -453,10 +532,12 @@ export default {
   reviewHistory: {
     title: 'Review History',
     description: 'View and manage all your review practice records, track memory consolidation and mastery progress',
-    searchPlaceholder: 'Search review records...',
+    searchPlaceholder: 'Search review records',
     filterByAccuracy: 'Filter by accuracy',
     filterByMemoryLevel: 'Filter by memory level',
     filterByDate: 'Filter by date',
+    timeRange: 'Time Range',
+    customRange: 'Custom',
     loading: 'Loading...',
     retry: 'Retry',
     noRecordsFound: 'No matching records found',
@@ -467,43 +548,49 @@ export default {
     vocabularyCount: 'words',
     accuracySuffix: '%',
     memoryLevel: 'Memory Level',
+    memoryLevelDistribution: 'Memory Level Distribution',
+    practiceSession: 'Review Practice',
+    viewDetails: 'View Details',
+    deleteButton: 'Delete',
+    duration: 'Duration',
+    reviewCount: 'Review Count',
+    accuracy: 'Accuracy',
+    improvements: 'Improvements',
+    sessionDetails: 'Review Practice Details',
+    sessionSummary: 'Session Summary',
+    reviewItemDetails: 'Review Item Details',
+    difficulty: 'Difficulty',
+    chinese: 'Chinese',
+    english: 'English',
     deleteDialogTitle: 'Delete Review Record',
-    deleteDialogMessage: 'Are you sure you want to delete the following review record?',
-    deleteDialogDetails: 'Accuracy',
-    deleteDialogWarning: 'This action cannot be undone',
+    deleteDialogMessage: 'Are you sure you want to delete this review record?',
+    deleteDialogWarning: 'This action cannot be undone and will revert all memory state updates from this review session.',
     cancel: 'Cancel',
-    delete: 'Delete',
-    loadError: 'Failed to load history, please try again',
-    deleteError: 'Failed to delete record, please try again'
+    confirmDelete: 'Confirm Delete',
+    loadError: 'Failed to load review history, please try again',
+    deleteError: 'Failed to delete review record, please try again',
+    recordDeleted: 'Review record deleted successfully'
   },
   reviewHistoryFilters: {
     accuracy: {
       all: 'All Accuracy',
       excellent: 'Excellent (90%+)',
       good: 'Good (70-89%)',
-      needsImprovement: 'Needs Improvement (<70%)'
+      average: 'Average (50-69%)',
+      poor: 'Needs Practice (<50%)'
     },
     memoryLevel: {
       all: 'All Memory Levels',
-      notLearned: 'Not Learned',
-      familiar: 'Familiar',
-      recognized: 'Recognized',
-      known: 'Known',
-      mastered: 'Mastered',
-      proficient: 'Proficient',
-      advanced: 'Advanced',
-      perfect: 'Perfect'
+      new: 'New Words (0-1)',
+      learning: 'Learning (2-3)',
+      familiar: 'Familiar (4-5)',
+      mastered: 'Mastered (6-7)'
     },
     dateRange: {
       today: 'Today',
-      yesterday: 'Yesterday',
-      thisWeek: 'This Week',
-      lastWeek: 'Last Week',
-      thisMonth: 'This Month',
-      lastMonth: 'Last Month',
-      last7Days: 'Last 7 Days',
-      last30Days: 'Last 30 Days',
-      customRange: 'Custom Range'
+      week: 'This Week',
+      month: 'This Month',
+      custom: 'Custom'
     }
   },
 

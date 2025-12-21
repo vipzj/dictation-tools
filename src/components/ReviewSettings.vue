@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="text-h6 q-mb-md">
         <q-icon name="psychology" class="q-mr-sm" />
-        复习设置
+        {{ $t('reviewSettings.title') }}
       </div>
 
       <div class="row q-gutter-md">
@@ -12,18 +12,18 @@
           <q-input
             v-model.number="settings.wordCount"
             type="number"
-            label="每次复习词汇数量"
+            :label="$t('reviewSettings.wordCount')"
             outlined
             min="1"
             max="50"
-            suffix="个"
+            :suffix="$t('reviewSettings.wordCountSuffix')"
             @update:model-value="updateSetting('wordCount', $event)"
           >
             <template v-slot:prepend>
               <q-icon name="format_list_numbered" />
             </template>
             <template v-slot:hint>
-              建议 10-30 个词汇
+              {{ $t('reviewSettings.wordCountHint') }}
             </template>
           </q-input>
         </div>
@@ -33,7 +33,7 @@
           <q-select
             v-model="settings.difficultyFilter"
             :options="difficultyOptions"
-            label="默认难度筛选"
+            :label="$t('reviewSettings.difficultyFilter')"
             outlined
             emit-value
             map-options
@@ -43,7 +43,7 @@
               <q-icon name="trending_up" />
             </template>
             <template v-slot:hint>
-              自动筛选适合难度的词汇
+              {{ $t('reviewSettings.difficultyFilterHint') }}
             </template>
           </q-select>
         </div>
@@ -54,7 +54,7 @@
           <q-icon name="volume_up" />
           <q-toggle
             v-model="settings.autoPlayAudio"
-            label="自动播放音频"
+            :label="$t('reviewSettings.autoPlayAudio')"
             color="primary"
             @update:model-value="updateSetting('autoPlayAudio', $event)"
           />
@@ -67,7 +67,7 @@
             <q-icon name="psychology" />
             <q-toggle
               v-model="settings.showMemoryLevel"
-              label="显示记忆水平"
+              :label="$t('reviewSettings.showMemoryLevel')"
               color="primary"
               @update:model-value="updateSetting('showMemoryLevel', $event)"
             />
@@ -80,7 +80,7 @@
           <q-icon name="trending_up" />
           <q-toggle
             v-model="settings.showProgress"
-            label="显示复习进度"
+            :label="$t('reviewSettings.showProgress')"
             color="primary"
             @update:model-value="updateSetting('showProgress', $event)"
           />
@@ -93,7 +93,7 @@
           <q-icon name="auto_fix_high" />
           <q-toggle
             v-model="settings.adaptiveDifficulty"
-            label="自适应难度"
+            :label="$t('reviewSettings.adaptiveDifficulty')"
             color="primary"
             @update:model-value="updateSetting('adaptiveDifficulty', $event)"
           />
@@ -106,7 +106,7 @@
 
       <div class="text-h6 q-mb-md">
         <q-icon name="memory" class="q-mr-sm" />
-        记忆算法设置
+        {{ $t('reviewSettings.memoryAlgorithmTitle') }}
       </div>
 
       <div class="row q-gutter-md">
@@ -115,7 +115,7 @@
           <q-select
             v-model="settings.algorithmType"
             :options="algorithmOptions"
-            label="记忆算法"
+            :label="$t('reviewSettings.algorithmType')"
             outlined
             emit-value
             map-options
@@ -125,7 +125,7 @@
               <q-icon name="memory" />
             </template>
             <template v-slot:hint>
-              选择记忆强化算法
+              {{ $t('reviewSettings.algorithmTypeHint') }}
             </template>
           </q-select>
         </div>
@@ -135,7 +135,7 @@
           <q-input
             v-model.number="settings.intervalMultiplier"
             type="number"
-            label="间隔倍数"
+            :label="$t('reviewSettings.intervalMultiplier')"
             outlined
             min="0.5"
             max="3.0"
@@ -146,7 +146,7 @@
               <q-icon name="schedule" />
             </template>
             <template v-slot:hint>
-              调整复习间隔长度
+              {{ $t('reviewSettings.intervalMultiplierHint') }}
             </template>
           </q-input>
         </div>
@@ -156,7 +156,7 @@
           <q-input
             v-model.number="settings.forgettingFactor"
             type="number"
-            label="遗忘因子"
+            :label="$t('reviewSettings.forgettingFactor')"
             outlined
             min="0.1"
             max="1.0"
@@ -167,7 +167,7 @@
               <q-icon name="psychology_alt" />
             </template>
             <template v-slot:hint>
-              错误时的间隔缩减
+              {{ $t('reviewSettings.forgettingFactorHint') }}
             </template>
           </q-input>
         </div>
@@ -180,7 +180,7 @@
             flat
             color="primary"
             icon="refresh"
-            label="重置为默认设置"
+            :label="$t('reviewSettings.resetToDefaults')"
             @click="resetToDefaults"
           />
         </div>
@@ -190,8 +190,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { settingsService } from '../services/index'
 import type { AppSettings } from '../types/settings'
 import { DEFAULT_REVIEW_SETTINGS } from '../types/review'
@@ -202,6 +203,7 @@ defineOptions({
 })
 
 const $q = useQuasar()
+const { t } = useI18n()
 
 // Local state for settings
 const settings = ref({
@@ -217,17 +219,17 @@ const settings = ref({
 })
 
 // Options
-const difficultyOptions = [
-  { label: '全部词汇', value: 'all' },
-  { label: '简单词汇', value: 'easy' },
-  { label: '困难词汇', value: 'hard' }
-]
+const difficultyOptions = computed(() => [
+  { label: t('reviewSettings.difficultyOptions.all'), value: 'all' },
+  { label: t('reviewSettings.difficultyOptions.easy'), value: 'easy' },
+  { label: t('reviewSettings.difficultyOptions.hard'), value: 'hard' }
+])
 
-const algorithmOptions = [
-  { label: '艾宾浩斯传统算法', value: 'ebbinghaus' },
-  { label: 'SuperMemo 2', value: 'sm2' },
-  { label: 'Anki算法', value: 'anki' }
-]
+const algorithmOptions = computed(() => [
+  { label: t('reviewSettings.algorithmOptions.ebbinghaus'), value: 'ebbinghaus' },
+  { label: t('reviewSettings.algorithmOptions.sm2'), value: 'sm2' },
+  { label: t('reviewSettings.algorithmOptions.anki'), value: 'anki' }
+])
 
 // Methods
 const loadSettings = () => {
@@ -284,7 +286,7 @@ const updateSetting = (key: string, value: unknown) => {
 
     $q.notify({
       type: 'positive',
-      message: '设置已保存',
+      message: t('reviewSettings.settingsSaved'),
       icon: 'save'
     })
   } catch (error) {
@@ -292,7 +294,7 @@ const updateSetting = (key: string, value: unknown) => {
 
     $q.notify({
       type: 'negative',
-      message: '保存设置失败',
+      message: t('reviewSettings.saveSettingsFailed'),
       icon: 'error'
     })
   }
@@ -332,7 +334,7 @@ const resetToDefaults = () => {
 
     $q.notify({
       type: 'positive',
-      message: '已重置为默认设置',
+      message: t('reviewSettings.resetSuccess'),
       icon: 'refresh'
     })
   } catch (error) {
@@ -340,7 +342,7 @@ const resetToDefaults = () => {
 
     $q.notify({
       type: 'negative',
-      message: '重置设置失败',
+      message: t('reviewSettings.resetFailed'),
       icon: 'error'
     })
   }

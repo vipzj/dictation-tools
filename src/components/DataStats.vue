@@ -7,7 +7,7 @@
           <q-card-section class="text-center">
             <q-icon name="label" size="2rem" color="primary" class="q-mb-sm" />
             <div class="text-h4 text-weight-bold">{{ stats.totalTags }}</div>
-            <div class="text-caption text-grey-7">Tags</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.tags') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -18,7 +18,7 @@
           <q-card-section class="text-center">
             <q-icon name="category" size="2rem" color="secondary" class="q-mb-sm" />
             <div class="text-h4 text-weight-bold">{{ stats.totalUnits }}</div>
-            <div class="text-caption text-grey-7">Units</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.units') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -29,7 +29,7 @@
           <q-card-section class="text-center">
             <q-icon name="menu_book" size="2rem" color="accent" class="q-mb-sm" />
             <div class="text-h4 text-weight-bold">{{ stats.totalVocabulary }}</div>
-            <div class="text-caption text-grey-7">Vocabulary</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.vocabulary') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -40,7 +40,7 @@
           <q-card-section class="text-center">
             <q-icon name="assessment" size="2rem" color="info" class="q-mb-sm" />
             <div class="text-h4 text-weight-bold">{{ stats.totalSessions }}</div>
-            <div class="text-caption text-grey-7">Sessions</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.sessions') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -51,7 +51,7 @@
           <q-card-section class="text-center">
             <q-icon name="storage" size="2rem" color="warning" class="q-mb-sm" />
             <div class="text-h6 text-weight-bold">{{ stats.databaseSize }}</div>
-            <div class="text-caption text-grey-7">Database Size</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.databaseSize') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -62,7 +62,7 @@
           <q-card-section class="text-center">
             <q-icon name="schedule" size="2rem" color="grey" class="q-mb-sm" />
             <div class="text-h6 text-weight-bold">{{ stats.lastModified }}</div>
-            <div class="text-caption text-grey-7">Last Modified</div>
+            <div class="text-caption text-grey-7">{{ $t('dataStats.lastModified') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -75,7 +75,7 @@
           flat
           color="primary"
           icon="refresh"
-          label="Refresh"
+          :label="$t('dataStats.refresh')"
           @click="refreshStats"
           :loading="loading"
         />
@@ -86,7 +86,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { db } from 'src/services/indexeddb';
+
+const { t } = useI18n();
 
 interface DataStats {
   totalTags: number;
@@ -104,8 +107,8 @@ const stats = ref<DataStats>({
   totalVocabulary: 0,
   totalSessions: 0,
   databaseSize: '0 KB',
-  lastModified: 'Never',
-  storageLocation: 'IndexedDB (Local)'
+  lastModified: t('dataStats.never'),
+  storageLocation: t('dataStats.storageLocation')
 });
 
 const loading = ref(false);
@@ -127,10 +130,10 @@ function formatRelativeTime(date: Date): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  if (diffMins < 1) return t('dataStats.timeFormats.justNow');
+  if (diffMins < 60) return t('dataStats.timeFormats.minutesAgo', { count: diffMins });
+  if (diffHours < 24) return t('dataStats.timeFormats.hoursAgo', { count: diffHours });
+  if (diffDays < 7) return t('dataStats.timeFormats.daysAgo', { count: diffDays });
 
   return date.toLocaleDateString();
 }
@@ -212,8 +215,8 @@ async function refreshStats() {
       totalVocabulary: vocabulary,
       totalSessions: sessions,
       databaseSize: formatBytes(dbSize),
-      lastModified: lastModified.getTime() === 0 ? 'Never' : formatRelativeTime(lastModified),
-      storageLocation: 'IndexedDB (Local)'
+      lastModified: lastModified.getTime() === 0 ? t('dataStats.never') : formatRelativeTime(lastModified),
+      storageLocation: t('dataStats.storageLocation')
     };
   } catch (error) {
     console.error('Error refreshing stats:', error);

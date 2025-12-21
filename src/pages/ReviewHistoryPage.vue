@@ -13,7 +13,7 @@
             <div class="col-12 col-md-4">
               <q-input
                 v-model="searchQuery"
-                label="搜索复习记录"
+                :label="$t('reviewHistory.searchPlaceholder')"
                 outlined
                 clearable
                 debounce="300"
@@ -27,7 +27,7 @@
               <q-select
                 v-model="selectedAccuracyFilter"
                 :options="accuracyFilterOptions"
-                label="按准确率筛选"
+                :label="$t('reviewHistory.filterByAccuracy')"
                 outlined
                 clearable
                 emit-value
@@ -42,7 +42,7 @@
               <q-select
                 v-model="selectedMemoryLevelFilter"
                 :options="memoryLevelFilterOptions"
-                label="按记忆水平筛选"
+                :label="$t('reviewHistory.filterByMemoryLevel')"
                 outlined
                 clearable
                 emit-value
@@ -65,7 +65,7 @@
               <q-select
                 v-model="dateRangeType"
                 :options="dateRangeOptions"
-                label="时间范围"
+                :label="$t('reviewHistory.timeRange')"
                 outlined
                 clearable
                 emit-value
@@ -92,7 +92,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="col-12 text-center">
         <q-spinner-dots size="40px" color="primary" />
-        <div class="q-mt-sm">加载中...</div>
+        <div class="q-mt-sm">{{ $t('reviewHistory.loading') }}</div>
       </div>
 
       <!-- Error State -->
@@ -103,7 +103,7 @@
           </template>
           {{ error }}
           <template v-slot:action>
-            <q-btn flat label="重试" @click="loadHistory" />
+            <q-btn flat :label="$t('reviewHistory.retry')" @click="loadHistory" />
           </template>
         </q-banner>
       </div>
@@ -111,19 +111,19 @@
       <!-- Empty State -->
       <div v-else-if="filteredSessions.length === 0" class="col-12 text-center">
         <div class="text-h6 text-grey-7 q-mb-md">
-          {{ hasActiveFilters ? '没有找到匹配的记录' : '还没有复习记录' }}
+          {{ hasActiveFilters ? $t('reviewHistory.noRecordsFound') : $t('reviewHistory.noRecords') }}
         </div>
         <q-btn
           v-if="!hasActiveFilters"
           color="primary"
-          label="开始复习"
+          :label="$t('reviewHistory.startReview')"
           :to="{ name: 'review' }"
         />
         <q-btn
           v-else
           flat
           color="primary"
-          label="清除筛选条件"
+          :label="$t('reviewHistory.clearFilters')"
           @click="clearFilters"
         />
       </div>
@@ -144,7 +144,7 @@
             >
               <q-card-section>
                 <div class="row items-center justify-between q-mb-sm">
-                  <div class="text-h6">复习练习 #{{ session.id.slice(-6) }}</div>
+                  <div class="text-h6">{{ $t('reviewHistory.practiceSession') }} #{{ session.id.slice(-6) }}</div>
                   <div class="column items-end">
                     <q-chip
                       :color="getAccuracyColor(session.accuracy || 0)"
@@ -161,7 +161,7 @@
 
                 <!-- Memory Level Distribution -->
                 <div class="q-mb-sm">
-                  <div class="text-caption text-grey-6 q-mb-xs">记忆水平分布</div>
+                  <div class="text-caption text-grey-6 q-mb-xs">{{ $t('reviewHistory.memoryLevelDistribution') }}</div>
                   <div class="row q-gutter-xs">
                     <div
                       v-for="(count, level) in getSessionMemoryLevels(session)"
@@ -183,11 +183,11 @@
                   </div>
                   <div>
                     <q-icon name="psychology" size="sm" class="q-mr-xs" />
-                    {{ session.vocabularyItems.length }} 个词汇
+                    {{ session.vocabularyItems.length }} {{ $t('reviewHistory.vocabularyCount') }}
                   </div>
                   <div>
                     <q-icon name="trending_up" size="sm" class="q-mr-xs" />
-                    {{ getSessionMemoryImprovements() }} 提升
+                    {{ getSessionMemoryImprovements() }} {{ $t('reviewHistory.improvements') }}
                   </div>
                 </div>
               </q-card-section>
@@ -197,14 +197,14 @@
                   flat
                   color="primary"
                   icon="visibility"
-                  label="查看详情"
+                  :label="$t('reviewHistory.viewDetails')"
                   @click.stop="viewSessionDetails(session)"
                 />
                 <q-btn
                   flat
                   color="negative"
                   icon="delete"
-                  label="删除"
+                  :label="$t('reviewHistory.deleteButton')"
                   @click.stop="confirmDelete(session)"
                 />
               </q-card-actions>
@@ -218,7 +218,7 @@
     <q-dialog v-model="showDetailsDialog">
       <q-card style="min-width: 700px; max-width: 90vw;">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">复习练习详情</div>
+          <div class="text-h6">{{ $t('reviewHistory.sessionDetails') }}</div>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup />
         </q-card-section>
@@ -226,7 +226,7 @@
         <q-card-section v-if="selectedSession" class="q-pa-lg">
           <!-- Session Summary -->
           <div class="q-mb-lg">
-            <div class="text-h6 q-mb-md">练习概要</div>
+            <div class="text-h6 q-mb-md">{{ $t('reviewHistory.sessionSummary') }}</div>
             <div class="row q-gutter-md">
               <div class="col-12 col-sm-4">
                 <q-card flat bordered>
@@ -234,7 +234,7 @@
                     <div class="text-h4" :class="getAccuracyColor(selectedSession.accuracy || 0)">
                       {{ Math.round((selectedSession.accuracy || 0) * 100) }}%
                     </div>
-                    <div class="text-caption text-grey-6">准确率</div>
+                    <div class="text-caption text-grey-6">{{ $t('reviewHistory.accuracy') }}</div>
                   </q-card-section>
                 </q-card>
               </div>
@@ -244,7 +244,7 @@
                     <div class="text-h4 text-primary">
                       {{ selectedSession.vocabularyItems.length }}
                     </div>
-                    <div class="text-caption text-grey-6">复习词汇数</div>
+                    <div class="text-caption text-grey-6">{{ $t('reviewHistory.reviewCount') }}</div>
                   </q-card-section>
                 </q-card>
               </div>
@@ -254,7 +254,7 @@
                     <div class="text-h4 text-info">
                       {{ formatDuration(selectedSession.duration || 0) }}
                     </div>
-                    <div class="text-caption text-grey-6">用时</div>
+                    <div class="text-caption text-grey-6">{{ $t('reviewHistory.duration') }}</div>
                   </q-card-section>
                 </q-card>
               </div>
@@ -263,7 +263,7 @@
 
           <!-- Review Items -->
           <div>
-            <div class="text-h6 q-mb-md">复习词汇详情</div>
+            <div class="text-h6 q-mb-md">{{ $t('reviewHistory.reviewItemDetails') }}</div>
             <q-list bordered separator>
               <q-item
                 v-for="(item, index) in selectedSession.vocabularyItems"
@@ -279,8 +279,8 @@
                 <q-item-section>
                   <q-item-label>{{ item.vocabularyItem.text }}</q-item-label>
                   <q-item-label caption>
-                    {{ item.vocabularyItem.type === 'chinese' ? '中文' : 'English' }}
-                    · 记忆水平: {{ getMemoryLevelDescription((item.memoryState?.memoryLevel || 0) as MemoryLevel) }}
+                    {{ item.vocabularyItem.type === 'chinese' ? $t('reviewHistory.chinese') : $t('reviewHistory.english') }}
+                    · {{ $t('reviewHistory.memoryLevel') }}: {{ getMemoryLevelDescription((item.memoryState?.memoryLevel || 0) as MemoryLevel) }}
                   </q-item-label>
                 </q-item-section>
 
@@ -295,7 +295,7 @@
                       Level {{ item.memoryState.memoryLevel }}
                     </q-chip>
                     <div class="text-caption text-grey-6 q-mt-xs">
-                      难度: {{ item.memoryState?.difficultyScore || 0 }}
+                      {{ $t('reviewHistory.difficulty') }}: {{ item.memoryState?.difficultyScore || 0 }}
                     </div>
                   </div>
                 </q-item-section>
@@ -311,16 +311,16 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="delete" color="negative" text-color="white" />
-          <span class="q-ml-sm">确定要删除这条复习记录吗？</span>
+          <span class="q-ml-sm">{{ $t('reviewHistory.deleteDialogMessage') }}</span>
         </q-card-section>
 
         <q-card-section>
-          删除后将无法恢复，包括本次复习的所有记忆状态更新。
+          {{ $t('reviewHistory.deleteDialogWarning') }}
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="primary" v-close-popup />
-          <q-btn flat label="确定删除" color="negative" @click="deleteSession" />
+          <q-btn flat :label="$t('reviewHistory.cancel')" color="primary" v-close-popup />
+          <q-btn flat :label="$t('reviewHistory.confirmDelete')" color="negative" @click="deleteSession" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -329,11 +329,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { reviewSessionService, memoryAlgorithmService } from '../services/index'
 import type { ReviewSession, MemoryLevel } from '../types/review'
-import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
+const { t } = useI18n()
 
 // State
 const loading = ref(false)
@@ -354,26 +356,26 @@ const selectedSession = ref<ReviewSession | null>(null)
 const sessionToDelete = ref<ReviewSession | null>(null)
 
 // Options
-const accuracyFilterOptions = [
-  { label: '优秀 (90%+)', value: 'excellent' },
-  { label: '良好 (70-89%)', value: 'good' },
-  { label: '及格 (50-69%)', value: 'average' },
-  { label: '需要练习 (<50%)', value: 'poor' }
-]
+const accuracyFilterOptions = computed(() => [
+  { label: t('reviewHistoryFilters.accuracy.excellent'), value: 'excellent' },
+  { label: t('reviewHistoryFilters.accuracy.good'), value: 'good' },
+  { label: t('reviewHistoryFilters.accuracy.average'), value: 'average' },
+  { label: t('reviewHistoryFilters.accuracy.poor'), value: 'poor' }
+])
 
-const memoryLevelFilterOptions = [
-  { label: '新学词汇 (0-1)', value: 'new' },
-  { label: '学习中 (2-3)', value: 'learning' },
-  { label: '基本掌握 (4-5)', value: 'familiar' },
-  { label: '完全掌握 (6-7)', value: 'mastered' }
-]
+const memoryLevelFilterOptions = computed(() => [
+  { label: t('reviewHistoryFilters.memoryLevel.new'), value: 'new' },
+  { label: t('reviewHistoryFilters.memoryLevel.learning'), value: 'learning' },
+  { label: t('reviewHistoryFilters.memoryLevel.familiar'), value: 'familiar' },
+  { label: t('reviewHistoryFilters.memoryLevel.mastered'), value: 'mastered' }
+])
 
-const dateRangeOptions = [
-  { label: '今天', value: 'today' },
-  { label: '本周', value: 'week' },
-  { label: '本月', value: 'month' },
-  { label: '自定义', value: 'custom' }
-]
+const dateRangeOptions = computed(() => [
+  { label: t('reviewHistoryFilters.dateRange.today'), value: 'today' },
+  { label: t('reviewHistoryFilters.dateRange.week'), value: 'week' },
+  { label: t('reviewHistoryFilters.dateRange.month'), value: 'month' },
+  { label: t('reviewHistoryFilters.dateRange.custom'), value: 'custom' }
+])
 
 // Computed
 const hasActiveFilters = computed(() => {
@@ -463,7 +465,7 @@ const loadHistory = async () => {
     sessions.value = allSessions
   } catch (err) {
     console.error('Failed to load review history:', err)
-    error.value = '加载复习历史失败，请重试'
+    error.value = t('reviewHistory.loadError')
   } finally {
     loading.value = false
   }
@@ -495,7 +497,7 @@ const deleteSession = async () => {
 
     $q.notify({
       type: 'positive',
-      message: '复习记录已删除'
+      message: t('reviewHistory.recordDeleted')
     })
 
     // Remove from local list
@@ -508,7 +510,7 @@ const deleteSession = async () => {
 
     $q.notify({
       type: 'negative',
-      message: '删除复习记录失败，请重试'
+      message: t('reviewHistory.deleteError')
     })
   }
 }
@@ -530,7 +532,7 @@ const getSessionMemoryImprovements = (): string => {
   // This would normally be calculated from the session results
   // For now, return a mock value
   const improvements = Math.floor(Math.random() * 5) + 1
-  return `${improvements}个词汇`
+  return `${improvements} ${t('reviewHistory.vocabularyCount')}`
 }
 
 const getAccuracyColor = (accuracy: number): string => {
@@ -559,7 +561,7 @@ const getMemoryLevelDescription = (level: MemoryLevel): string => {
 
 const formatDate = (date: Date | string): string => {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('zh-CN', {
+  return new Date(date).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
