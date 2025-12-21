@@ -7,6 +7,7 @@ export class DictationAudioService {
     item: VocabularyItem
     playCount: number
     interval: number
+    intraWordInterval: number
     onComplete: () => void
   }> = []
 
@@ -37,6 +38,7 @@ export class DictationAudioService {
         item,
         playCount: settings.playCount,
         interval: settings.interval,
+        intraWordInterval: settings.intraWordInterval,
         onComplete: () => {
           onProgress?.(index + 1, vocabularyItems.length)
         }
@@ -67,7 +69,12 @@ export class DictationAudioService {
         this.currentTotalPlayCount = queueItem.playCount
       }
 
-      await this.playVocabularyItem(queueItem)
+      await this.playVocabularyItem({
+        item: queueItem.item,
+        playCount: queueItem.playCount,
+        interval: queueItem.interval,
+        intraWordInterval: queueItem.intraWordInterval
+      })
 
       // Add interval between items (except for the last one)
       if (i < queueLength - 1) {
@@ -91,8 +98,9 @@ export class DictationAudioService {
     item: VocabularyItem
     playCount: number
     interval: number
+    intraWordInterval: number
   }): Promise<void> {
-    const { item, playCount } = queueItem
+    const { item, playCount, intraWordInterval } = queueItem
 
     // Set the total play count for current item (only if not already set by processQueue)
     if (this.currentTotalPlayCount === 0) {
@@ -112,9 +120,9 @@ export class DictationAudioService {
         this.currentPlayCount = i + 1
         await this.playAudioBlob(recordedAudio)
 
-        // Add small interval between plays of the same item
+        // Add intra-word interval between plays of the same item
         if (i < playCount - 1) {
-          await this.wait(500) // 500ms between repeats
+          await this.wait(intraWordInterval * 1000) // Use configurable intra-word interval
         }
       }
     } else {
@@ -126,9 +134,9 @@ export class DictationAudioService {
         this.currentPlayCount = i + 1
         await this.playTTS(item.text, item.type)
 
-        // Add small interval between plays of the same item
+        // Add intra-word interval between plays of the same item
         if (i < playCount - 1) {
-          await this.wait(500) // 500ms between repeats
+          await this.wait(intraWordInterval * 1000) // Use configurable intra-word interval
         }
       }
     }

@@ -38,6 +38,40 @@
               <template v-slot:prepend>
                 <q-icon name="timer" />
               </template>
+              <template v-slot:append>
+                <q-icon name="info">
+                  <q-tooltip>
+                    不同词语之间的停顿时间
+                  </q-tooltip>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 col-sm-6">
+            <q-input
+              v-model.number="localSettings.intraWordInterval"
+              type="number"
+              label="同一词语播放间隔"
+              outlined
+              :min="0.5"
+              :max="5"
+              step="0.1"
+              suffix="秒"
+              :rules="[
+                val => val >= 0.5 || '最小间隔为0.5秒',
+                val => val <= 5 || '最大间隔为5秒'
+              ]"
+            >
+              <template v-slot:prepend>
+                <q-icon name="speed" />
+              </template>
+              <template v-slot:append>
+                <q-icon name="info">
+                  <q-tooltip>
+                    同一词语多次播放之间的停顿时间
+                  </q-tooltip>
+                </q-icon>
+              </template>
             </q-input>
           </div>
         </div>
@@ -86,7 +120,8 @@ const emit = defineEmits<Emits>()
 const starting = ref(false)
 const localSettings = ref<DictationSettings>({
   playCount: 2,
-  interval: 3
+  interval: 3,
+  intraWordInterval: 1.0
 })
 
 const modelValue = computed({

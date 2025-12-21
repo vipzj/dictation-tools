@@ -199,7 +199,8 @@ const filteredUnits = computed(() => {
     )
   }
 
-  return filtered
+  // Sort by updatedAt in descending order (most recently updated first)
+  return filtered.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 })
 
 // Methods

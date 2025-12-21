@@ -25,12 +25,12 @@
           </q-input>
         </div>
 
-        <!-- Default Interval -->
+        <!-- Default Inter-word Interval -->
         <div class="col-12 col-sm-6">
           <q-input
             v-model.number="localSettings.interval"
             type="number"
-            label="默认间隔时间"
+            label="默认词语间隔时间"
             outlined
             :min="1"
             :max="10"
@@ -39,6 +39,43 @@
           >
             <template v-slot:prepend>
               <q-icon name="timer" />
+            </template>
+            <template v-slot:append>
+              <q-icon name="info">
+                <q-tooltip>
+                  不同词语之间的停顿时间
+                </q-tooltip>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Default Intra-word Interval -->
+        <div class="col-12 col-sm-6">
+          <q-input
+            v-model.number="localSettings.intraWordInterval"
+            type="number"
+            label="默认词语内间隔时间"
+            outlined
+            :min="0.5"
+            :max="5"
+            step="0.1"
+            suffix="秒"
+            :rules="[
+              val => val >= 0.5 || '最小间隔为0.5秒',
+              val => val <= 5 || '最大间隔为5秒'
+            ]"
+            @update:model-value="updateSettings"
+          >
+            <template v-slot:prepend>
+              <q-icon name="speed" />
+            </template>
+            <template v-slot:append>
+              <q-icon name="info">
+                <q-tooltip>
+                  同一词语多次播放之间的停顿时间
+                </q-tooltip>
+              </q-icon>
             </template>
           </q-input>
         </div>
@@ -66,7 +103,8 @@ const $q = useQuasar()
 
 const localSettings = ref<DictationSettings>({
   playCount: 2,
-  interval: 3
+  interval: 3,
+  intraWordInterval: 1.0
 })
 
 const loadSettings = () => {

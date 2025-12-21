@@ -130,7 +130,7 @@ export const tagService = {
 
 export const unitService = {
   async getAllUnits(): Promise<Unit[]> {
-    return await db.units.orderBy('name').toArray()
+    return await db.units.orderBy('updatedAt').reverse().toArray()
   },
 
   async getUnitById(id: string): Promise<Unit | undefined> {
@@ -429,7 +429,8 @@ export const dictationService = {
       unitName: session.unitName,
       settings: {
         playCount: session.settings.playCount,
-        interval: session.settings.interval
+        interval: session.settings.interval,
+        intraWordInterval: session.settings.intraWordInterval ?? 1.0
       },
       results: session.results.map(result => ({
         vocabularyItemId: result.vocabularyItemId,
@@ -492,7 +493,8 @@ export const dictationService = {
     if (updates.settings !== undefined) {
       cleanUpdates.settings = {
         playCount: updates.settings.playCount,
-        interval: updates.settings.interval
+        interval: updates.settings.interval,
+        intraWordInterval: updates.settings.intraWordInterval ?? 1.0
       }
     }
 

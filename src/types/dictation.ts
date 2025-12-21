@@ -20,7 +20,8 @@ export interface DictationResult {
 
 export interface DictationSettings {
   playCount: number
-  interval: number // in seconds
+  interval: number // in seconds between different words
+  intraWordInterval: number // in seconds between multiple plays of the same word
 }
 
 export interface DictationSessionSummary {
@@ -42,5 +43,6 @@ export interface CreateDictationSessionRequest {
 
 export const DEFAULT_DICTATION_SETTINGS: DictationSettings = {
   playCount: 2,
-  interval: 3
+  interval: 3,
+  intraWordInterval: 1.0
 } as const

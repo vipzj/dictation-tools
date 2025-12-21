@@ -17,7 +17,8 @@ export interface AppSettings {
 export const DEFAULT_SETTINGS: AppSettings = {
   dictation: {
     playCount: 2,
-    interval: 3
+    interval: 3,
+    intraWordInterval: 1.0
   }
 } as const;
 
