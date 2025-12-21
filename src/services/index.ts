@@ -41,3 +41,20 @@ export type {
 
 // App Settings
 export type { AppSettings } from '../types/settings'
+
+// Dashboard
+export type {
+  SystemStats,
+  DashboardStats,
+  ContentStats,
+  LearningStats,
+  SystemMetrics,
+  HelpSection,
+  HelpItem,
+  QuickAction,
+  LoadingState,
+  DashboardConfig
+} from '../types/dashboard'
+
+// Dashboard Composable
+export { useSystemStats } from '../composables/useSystemStats'

@@ -60,16 +60,6 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable :to="{ path: '/settings' }" :active-class="'text-primary'">
-          <q-item-section avatar>
-            <q-icon name="settings" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Settings</q-item-label>
-            <q-item-label caption>Manage data & preferences</q-item-label>
-          </q-item-section>
-        </q-item>
-
         <q-item clickable :to="{ path: '/units' }" :active-class="'text-primary'">
           <q-item-section avatar>
             <q-icon name="school" />
@@ -107,6 +97,16 @@
           <q-item-section>
             <q-item-label>Review</q-item-label>
             <q-item-label caption>Spaced repetition practice</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable :to="{ path: '/settings' }" :active-class="'text-primary'">
+          <q-item-section avatar>
+            <q-icon name="settings" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Settings</q-item-label>
+            <q-item-label caption>Manage data & preferences</q-item-label>
           </q-item-section>
         </q-item>
 
