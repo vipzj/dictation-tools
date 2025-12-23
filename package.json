@@ -12,7 +12,10 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "build:preview": "quasar build",
+    "postinstall": "quasar prepare",
+    "deploy:pages": "npm run build && wrangler pages deploy dist/spa --project-name=dictation-tools",
+    "deploy:pages:prod": "npm run build && wrangler pages deploy dist/spa --project-name=dictation-tools --branch=main"
   },
   "dependencies": {
     "axios": "^1.2.1",

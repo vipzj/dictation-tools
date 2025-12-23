@@ -97,6 +97,39 @@ quasar build
 # The built files will be in the dist/spa directory
 ```
 
+### Deployment
+
+#### Cloudflare Pages (Git Integration)
+
+The application is automatically deployed to Cloudflare Pages on every push to the `main` branch.
+
+- **Production URL**: https://dictation-tools.pages.dev
+- **Build Command**: `npm ci && npm run build`
+- **Output Directory**: `dist/spa`
+
+**Deployment Workflow**:
+
+1. Push to `main` branch → Automatic production deployment
+2. Create pull request → Automatic preview deployment
+3. Build logs available in Cloudflare Dashboard
+
+#### Manual Deployment (Optional)
+
+For manual deployment using Wrangler CLI:
+
+```bash
+# Install wrangler globally
+npm install -g wrangler
+
+# Login to Cloudflare
+wrangler login
+
+# Build and deploy
+npm run deploy:pages
+```
+
+**Note**: Git integration is the recommended deployment method. CLI deployment is useful for testing or emergency hotfixes.
+
 ### Code Quality
 
 ```bash
@@ -237,6 +270,39 @@ quasar build
 
 # 构建产物将位于 dist/spa 目录
 ```
+
+### 部署
+
+#### Cloudflare Pages (Git 集成)
+
+应用在每次推送到 `main` 分支时会自动部署到 Cloudflare Pages。
+
+- **生产环境 URL**: https://dictation-tools.pages.dev
+- **构建命令**: `npm ci && npm run build`
+- **输出目录**: `dist/spa`
+
+**部署流程**:
+
+1. 推送到 `main` 分支 → 自动生产部署
+2. 创建 Pull Request → 自动预览部署
+3. 在 Cloudflare Dashboard 查看构建日志
+
+#### 手动部署 (可选)
+
+使用 Wrangler CLI 进行手动部署：
+
+```bash
+# 全局安装 wrangler
+npm install -g wrangler
+
+# 登录 Cloudflare
+wrangler login
+
+# 构建并部署
+npm run deploy:pages
+```
+
+**注意**: Git 集成是推荐的部署方式。CLI 部署适用于测试或紧急修复。
 
 ### 代码质量检查
 
