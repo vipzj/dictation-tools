@@ -16,6 +16,7 @@
 ---
 
 <a name="english"></a>
+
 ## English
 
 ### Features
@@ -128,16 +129,16 @@ dictation-tools-v6/
 
 The review system uses an 8-level memory mastery system based on the Ebbinghaus forgetting curve:
 
-| Level | Name        | Review Interval | Description          |
-|-------|-------------|-----------------|----------------------|
-| 0     | New         | -               | Not yet learned      |
-| 1     | Learning    | 1 day           | First exposure       |
-| 2     | Familiar    | 2 days          | Basic recognition    |
-| 3     | Known       | 4 days          | Can recall           |
-| 4     | Recognized  | 7 days          | Good retention       |
-| 5     | Mastered    | 15 days         | Strong memory        |
-| 6     | Proficient  | 30 days         | Excellent retention  |
-| 7     | Expert      | 30 days         | Fully mastered       |
+| Level | Name       | Review Interval | Description         |
+| ----- | ---------- | --------------- | ------------------- |
+| 0     | New        | -               | Not yet learned     |
+| 1     | Learning   | 1 day           | First exposure      |
+| 2     | Familiar   | 2 days          | Basic recognition   |
+| 3     | Known      | 4 days          | Can recall          |
+| 4     | Recognized | 7 days          | Good retention      |
+| 5     | Mastered   | 15 days         | Strong memory       |
+| 6     | Proficient | 30 days         | Excellent retention |
+| 7     | Expert     | 30 days         | Fully mastered      |
 
 ### Contributing
 
@@ -156,6 +157,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <a name="中文"></a>
+
 ## 中文
 
 ### 功能特性
@@ -207,8 +209,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/dictation-tools-v6.git
-cd dictation-tools-v6
+git clone https://github.com/vipzj/dictation-tools.git
+cd dictation-tools
 
 # 安装依赖
 npm install
@@ -268,16 +270,16 @@ dictation-tools-v6/
 
 复习系统采用基于艾宾浩斯遗忘曲线的 8 级记忆掌握体系：
 
-| 等级 | 名称     | 复习间隔 | 描述             |
-|------|----------|----------|------------------|
-| 0    | 未掌握   | -        | 尚未学习         |
-| 1    | 初识     | 1 天     | 初次接触         |
-| 2    | 认识     | 2 天     | 基本识别         |
-| 3    | 熟悉     | 4 天     | 能够回忆         |
-| 4    | 掌握     | 7 天     | 记忆良好         |
-| 5    | 熟练     | 15 天    | 记忆牢固         |
-| 6    | 精通     | 30 天    | 保持优秀         |
-| 7    | 完全掌握 | 30 天    | 完全掌握         |
+| 等级 | 名称     | 复习间隔 | 描述     |
+| ---- | -------- | -------- | -------- |
+| 0    | 未掌握   | -        | 尚未学习 |
+| 1    | 初识     | 1 天     | 初次接触 |
+| 2    | 认识     | 2 天     | 基本识别 |
+| 3    | 熟悉     | 4 天     | 能够回忆 |
+| 4    | 掌握     | 7 天     | 记忆良好 |
+| 5    | 熟练     | 15 天    | 记忆牢固 |
+| 6    | 精通     | 30 天    | 保持优秀 |
+| 7    | 完全掌握 | 30 天    | 完全掌握 |
 
 ### 贡献
 
