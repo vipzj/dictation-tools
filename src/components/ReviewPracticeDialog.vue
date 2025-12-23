@@ -3,7 +3,7 @@
     <q-card class="column">
       <!-- Header -->
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">复习练习中</div>
+        <div class="text-h6">{{ $t('reviewPracticeDialog.title') }}</div>
         <q-space />
         <q-btn
           flat
@@ -22,7 +22,7 @@
               {{ current + 1 }} / {{ total }}
             </div>
             <div class="text-caption text-grey-6">
-              当前进度
+              {{ $t('reviewPracticeDialog.currentProgress') }}
             </div>
           </div>
           <div class="col">
@@ -42,17 +42,17 @@
           <!-- Memory Level Info -->
           <div v-if="currentReviewItem && currentReviewItem.memoryState" class="q-mb-lg">
             <div class="text-h6 q-mb-sm">
-              记忆水平: {{ getMemoryLevelDescription(currentReviewItem.memoryState.memoryLevel as MemoryLevel) }}
+              {{ $t('reviewPracticeDialog.memoryLevel') }}: {{ getMemoryLevelDescription(currentReviewItem.memoryState.memoryLevel as MemoryLevel) }}
             </div>
             <div class="row q-gutter-md justify-center items-center">
               <div class="memory-level-indicator" :style="{ backgroundColor: getMemoryLevelColor(currentReviewItem.memoryState.memoryLevel as MemoryLevel) }">
                 {{ currentReviewItem.memoryState.memoryLevel }}
               </div>
               <div class="text-caption text-grey-6">
-                错误次数: {{ currentReviewItem.memoryState.errorCount }}
+                {{ $t('reviewPracticeDialog.errorCount') }}: {{ currentReviewItem.memoryState.errorCount }}
               </div>
               <div class="text-caption text-grey-6">
-                连续正确: {{ currentReviewItem.memoryState.successStreak }}
+                {{ $t('reviewPracticeDialog.successStreak') }}: {{ currentReviewItem.memoryState.successStreak }}
               </div>
             </div>
           </div>
@@ -67,10 +67,10 @@
             <div v-if="isPlayingAudio" class="column items-center">
               <q-spinner-dots size="60px" color="primary" class="q-mb-md" />
               <div class="text-body1 text-grey-6">
-                正在播放第 {{ currentPlayCount }} / {{ totalPlayCount }} 次
+                {{ $t('reviewPracticeDialog.playingProgress', { current: currentPlayCount, total: totalPlayCount }) }}
               </div>
               <div v-if="isInInterval" class="text-caption text-grey-5 q-mt-sm">
-                间隔时间: {{ remainingInterval }}秒
+                {{ $t('reviewPracticeDialog.intervalTime', { seconds: remainingInterval }) }}
               </div>
             </div>
 
@@ -87,7 +87,7 @@
                 {{ remainingInterval }}
               </q-circular-progress>
               <div class="text-body1 text-grey-6">
-                下一个词汇准备中...
+                {{ $t('reviewPracticeDialog.preparingNext') }}
               </div>
             </div>
 
@@ -97,7 +97,7 @@
                 {{ current + 1 }}
               </div>
               <div class="text-body1 text-grey-6">
-                准备播放下一个词汇
+                {{ $t('reviewPracticeDialog.preparingToPlay') }}
               </div>
             </div>
           </div>
@@ -110,14 +110,14 @@
           <q-btn
             v-if="!isPlaying"
             color="primary"
-            label="开始复习"
+            :label="$t('reviewPracticeDialog.startReview')"
             size="lg"
             @click="startReview"
           />
           <q-btn
             v-else
             color="negative"
-            label="停止复习"
+            :label="$t('reviewPracticeDialog.stopReview')"
             size="lg"
             @click="confirmStop"
           />
@@ -130,14 +130,14 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="warning" color="negative" text-color="white" />
-          <span class="q-ml-sm">确认停止复习练习？</span>
+          <span class="q-ml-sm">{{ $t('reviewPracticeDialog.stopConfirmation') }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="primary" @click="showStopConfirmation = false" />
+          <q-btn flat :label="$t('common.cancel')" color="primary" @click="showStopConfirmation = false" />
           <q-btn
             flat
-            label="停止"
+            :label="$t('reviewPracticeDialog.stopReview')"
             color="negative"
             @click="stopReview"
           />
@@ -149,6 +149,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { reviewSessionService } from '../services/index'
 import { dictationAudioService } from '../services/index'
 import type { ReviewSession } from '../types/review'
@@ -167,6 +168,7 @@ interface Emits {
   (e: 'complete', sessionId: string): void
 }
 
+const { t } = useI18n()
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
@@ -176,7 +178,7 @@ const current = ref(0)
 const isPlaying = ref(false)
 const isPlayingAudio = ref(false)
 const isInInterval = ref(false)
-const audioStatus = ref('准备开始复习...')
+const audioStatus = ref(t('reviewPracticeDialog.preparingToStart'))
 const currentPlayCount = ref(0)
 const totalPlayCount = ref(0)
 const remainingInterval = ref(0)
@@ -228,7 +230,7 @@ const loadSession = async (sessionId: string) => {
     session.value = loadedSession
     current.value = 0
     isPlaying.value = false
-    audioStatus.value = '准备开始复习...'
+    audioStatus.value = t('reviewPracticeDialog.preparingToStart')
     currentPlayCount.value = 0
     totalPlayCount.value = 0
     remainingInterval.value = 0
@@ -244,7 +246,7 @@ const startReview = () => {
 
   isPlaying.value = true
   current.value = 0
-  audioStatus.value = '正在播放复习词汇...'
+  audioStatus.value = t('reviewPracticeDialog.playingReview')
 
   // Start playing audio for all vocabulary items
   // Convert ReviewVocabulary to VocabularyItem format for audio service
@@ -321,7 +323,7 @@ const completeReview = () => {
   if (!session.value) return
 
   isPlaying.value = false
-  audioStatus.value = '复习完成，正在保存结果...'
+  audioStatus.value = t('reviewPracticeDialog.completingReview')
 
   emit('complete', session.value.id)
   modelValueComputed.value = false
@@ -344,14 +346,14 @@ const getMemoryLevelColor = (level: MemoryLevel): string => {
 
 const getMemoryLevelDescription = (level: MemoryLevel): string => {
   const descriptions = [
-    '未掌握',
-    '初识',
-    '认识',
-    '熟悉',
-    '掌握',
-    '熟练',
-    '精通',
-    '完全掌握'
+    t('reviewPracticeDialog.memoryLevels.0'),
+    t('reviewPracticeDialog.memoryLevels.1'),
+    t('reviewPracticeDialog.memoryLevels.2'),
+    t('reviewPracticeDialog.memoryLevels.3'),
+    t('reviewPracticeDialog.memoryLevels.4'),
+    t('reviewPracticeDialog.memoryLevels.5'),
+    t('reviewPracticeDialog.memoryLevels.6'),
+    t('reviewPracticeDialog.memoryLevels.7')
   ]
   return (descriptions[level] ?? descriptions[0])!
 }

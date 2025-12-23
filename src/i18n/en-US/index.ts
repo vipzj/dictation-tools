@@ -428,6 +428,57 @@ export default {
     never: 'Never'
   },
 
+  // Dictation Dialog Component
+  dictationDialog: {
+    title: 'Start Dictation Practice',
+    vocabularyCount: 'words',
+    playCount: 'Play Count Per Word',
+    playCountSuffix: 'times',
+    wordInterval: 'Word Interval Time',
+    intervalSuffix: 'seconds',
+    intervalTooltip: 'Pause between different words',
+    intraWordInterval: 'Intra-word Interval',
+    intraWordIntervalTooltip: 'Pause between multiple plays of the same word',
+    validationRules: {
+      minInterval: 'Minimum interval is 0.5 seconds',
+      maxInterval: 'Maximum interval is 5 seconds'
+    },
+    vocabularyStats: '{chinese} Chinese words · {english} English words',
+    audioInfo: 'Words with recordings will play recordings first, others will use text-to-speech',
+    cancel: 'Cancel',
+    startDictation: 'Start Dictation',
+    noVocabularyError: 'This unit has no vocabulary items'
+  },
+
+  // Review Practice Dialog Component
+  reviewPracticeDialog: {
+    title: 'Review Practice in Progress',
+    currentProgress: 'Current Progress',
+    memoryLevel: 'Memory Level',
+    errorCount: 'Error Count',
+    successStreak: 'Success Streak',
+    playingProgress: 'Playing {current} / {total} times',
+    intervalTime: 'Interval time: {seconds} seconds',
+    preparingNext: 'Preparing next vocabulary item...',
+    preparingToPlay: 'Preparing to play next item',
+    startReview: 'Start Review',
+    stopReview: 'Stop Review',
+    stopConfirmation: 'Confirm stopping review practice?',
+    preparingToStart: 'Preparing to start review...',
+    playingReview: 'Playing review vocabulary...',
+    completingReview: 'Review completed, saving results...',
+    memoryLevels: {
+      0: 'Not Learned',
+      1: 'Recognized',
+      2: 'Familiar',
+      3: 'Known',
+      4: 'Mastered',
+      5: 'Proficient',
+      6: 'Advanced',
+      7: 'Perfect'
+    }
+  },
+
   // Dictation Page
   dictationPage: {
     title: 'Dictation Practice',
@@ -591,6 +642,74 @@ export default {
       week: 'This Week',
       month: 'This Month',
       custom: 'Custom'
+    }
+  },
+
+  // Vocabulary Editor
+  vocabularyEditor: {
+    title: 'Manage Vocabulary - {name}',
+    noUnitSelected: 'No Unit Selected',
+    selectUnitToManage: 'Please select a unit to manage its vocabulary.',
+    statistics: {
+      totalWords: 'Total Words',
+      chinese: 'Chinese',
+      english: 'English'
+    },
+    tabs: {
+      chinese: 'Chinese Words',
+      english: 'English Terms'
+    },
+    addChinese: {
+      title: 'Add Chinese Word',
+      placeholder: 'Enter Chinese word...',
+      button: 'Add Word'
+    },
+    addEnglish: {
+      title: 'Add English Term',
+      placeholder: 'Enter English term...',
+      button: 'Add Term'
+    },
+    audioDialog: {
+      recordTitle: 'Record Audio',
+      playTitle: 'Play Audio',
+      loading: 'Loading audio...',
+      close: 'Close'
+    },
+    editDialog: {
+      title: 'Edit {type}',
+      chineseLabel: 'Enter Chinese word...',
+      englishLabel: 'Enter English term...',
+      validation: 'Text is required',
+      cancel: 'Cancel',
+      save: 'Save'
+    },
+    deleteDialog: {
+      title: 'Confirm Delete',
+      message: 'Are you sure you want to delete "{text}"?',
+      ok: 'Delete',
+      cancel: 'Cancel'
+    },
+    notifications: {
+      addSuccess: '{type} "{text}" added successfully',
+      addError: 'Failed to add {type}',
+      updateSuccess: 'Vocabulary item updated successfully',
+      updateError: 'Failed to update vocabulary item',
+      deleteSuccess: '"{text}" deleted successfully',
+      deleteError: 'Failed to delete vocabulary item',
+      loadError: 'Failed to load vocabulary items',
+      audioSaveSuccess: 'Audio recording saved successfully',
+      audioSaveError: 'Failed to save audio recording',
+      noAudio: 'No audio recorded for this item',
+      audioOpenError: 'Failed to open audio recorder',
+      playError: 'Failed to play audio',
+      recordingError: 'Recording error',
+      playbackError: 'Playback error'
+    },
+    types: {
+      chinese: 'Chinese',
+      english: 'English',
+      chineseWord: 'Chinese word',
+      englishTerm: 'English term'
     }
   },
 

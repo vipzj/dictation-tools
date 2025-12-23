@@ -2,9 +2,9 @@
   <q-dialog v-model="modelValue" persistent>
     <q-card style="min-width: 400px">
       <q-card-section>
-        <div class="text-h6">开始听写练习</div>
+        <div class="text-h6">{{ $t('dictationDialog.title') }}</div>
         <div v-if="unit" class="text-subtitle2 text-grey-6">
-          {{ unit.name }} · {{ unit.vocabularyCount }} 个词汇
+          {{ unit.name }} · {{ unit.vocabularyCount }} {{ $t('dictationDialog.vocabularyCount') }}
         </div>
       </q-card-section>
 
@@ -14,11 +14,11 @@
             <q-input
               v-model.number="localSettings.playCount"
               type="number"
-              label="每个词语播放次数"
+              :label="$t('dictationDialog.playCount')"
               outlined
               :min="1"
               :max="5"
-              suffix="次"
+              :suffix="$t('dictationDialog.playCountSuffix')"
             >
               <template v-slot:prepend>
                 <q-icon name="repeat" />
@@ -29,11 +29,11 @@
             <q-input
               v-model.number="localSettings.interval"
               type="number"
-              label="词语间隔时间"
+              :label="$t('dictationDialog.wordInterval')"
               outlined
               :min="1"
               :max="10"
-              suffix="秒"
+              :suffix="$t('dictationDialog.intervalSuffix')"
             >
               <template v-slot:prepend>
                 <q-icon name="timer" />
@@ -41,7 +41,7 @@
               <template v-slot:append>
                 <q-icon name="info">
                   <q-tooltip>
-                    不同词语之间的停顿时间
+                    {{ $t('dictationDialog.intervalTooltip') }}
                   </q-tooltip>
                 </q-icon>
               </template>
@@ -51,15 +51,15 @@
             <q-input
               v-model.number="localSettings.intraWordInterval"
               type="number"
-              label="同一词语播放间隔"
+              :label="$t('dictationDialog.intraWordInterval')"
               outlined
               :min="0.5"
               :max="5"
               step="0.1"
-              suffix="秒"
+              :suffix="$t('dictationDialog.intervalSuffix')"
               :rules="[
-                val => val >= 0.5 || '最小间隔为0.5秒',
-                val => val <= 5 || '最大间隔为5秒'
+                val => val >= 0.5 || $t('dictationDialog.validationRules.minInterval'),
+                val => val <= 5 || $t('dictationDialog.validationRules.maxInterval')
               ]"
             >
               <template v-slot:prepend>
@@ -68,7 +68,7 @@
               <template v-slot:append>
                 <q-icon name="info">
                   <q-tooltip>
-                    同一词语多次播放之间的停顿时间
+                    {{ $t('dictationDialog.intraWordIntervalTooltip') }}
                   </q-tooltip>
                 </q-icon>
               </template>
@@ -78,17 +78,17 @@
 
         <div class="q-mt-md">
           <div class="text-caption text-grey-6">
-            <div>{{ unit?.chineseCount }} 个中文词汇 · {{ unit?.englishCount }} 个英文词汇</div>
-            <div>有录音的词汇将优先播放录音，没有录音的将使用语音合成</div>
+            <div>{{ $t('dictationDialog.vocabularyStats', { chinese: unit?.chineseCount || 0, english: unit?.englishCount || 0 }) }}</div>
+            <div>{{ $t('dictationDialog.audioInfo') }}</div>
           </div>
         </div>
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="取消" @click="close" />
+        <q-btn flat :label="$t('dictationDialog.cancel')" @click="close" />
         <q-btn
           color="primary"
-          label="开始听写"
+          :label="$t('dictationDialog.startDictation')"
           :loading="starting"
           @click="startDictation"
         />
@@ -99,10 +99,13 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { settingsService } from '../services/settingsService'
 import { dictationService, vocabularyService } from '../services/indexeddb'
 import type { UnitWithVocabularyCount } from '../types/unit'
 import type { DictationSettings, DictationSession, CreateDictationSessionRequest } from '../types/dictation'
+
+const { t } = useI18n()
 
 interface Props {
   modelValue: boolean
@@ -151,7 +154,7 @@ const startDictation = async () => {
     const vocabularyItems = await vocabularyService.getVocabularyItemsByUnit(props.unit.id)
 
     if (vocabularyItems.length === 0) {
-      throw new Error('该单元没有任何词汇')
+      throw new Error(t('dictationDialog.noVocabularyError'))
     }
 
     // Create dictation session

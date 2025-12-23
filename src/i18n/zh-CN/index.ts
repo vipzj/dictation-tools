@@ -428,6 +428,57 @@ export default {
     never: '从未'
   },
 
+  // Dictation Dialog Component
+  dictationDialog: {
+    title: '开始听写练习',
+    vocabularyCount: '个词汇',
+    playCount: '每个词语播放次数',
+    playCountSuffix: '次',
+    wordInterval: '词语间隔时间',
+    intervalSuffix: '秒',
+    intervalTooltip: '不同词语之间的停顿时间',
+    intraWordInterval: '同一词语播放间隔',
+    intraWordIntervalTooltip: '同一词语多次播放之间的停顿时间',
+    validationRules: {
+      minInterval: '最小间隔为0.5秒',
+      maxInterval: '最大间隔为5秒'
+    },
+    vocabularyStats: '{chinese} 个中文词汇 · {english} 个英文词汇',
+    audioInfo: '有录音的词汇将优先播放录音，没有录音的将使用语音合成',
+    cancel: '取消',
+    startDictation: '开始听写',
+    noVocabularyError: '该单元没有任何词汇'
+  },
+
+  // Review Practice Dialog Component
+  reviewPracticeDialog: {
+    title: '复习练习中',
+    currentProgress: '当前进度',
+    memoryLevel: '记忆水平',
+    errorCount: '错误次数',
+    successStreak: '连续正确',
+    playingProgress: '正在播放第 {current} / {total} 次',
+    intervalTime: '间隔时间: {seconds}秒',
+    preparingNext: '下一个词汇准备中...',
+    preparingToPlay: '准备播放下一个词汇',
+    startReview: '开始复习',
+    stopReview: '停止复习',
+    stopConfirmation: '确认停止复习练习？',
+    preparingToStart: '准备开始复习...',
+    playingReview: '正在播放复习词汇...',
+    completingReview: '复习完成，正在保存结果...',
+    memoryLevels: {
+      0: '未掌握',
+      1: '初识',
+      2: '认识',
+      3: '熟悉',
+      4: '掌握',
+      5: '熟练',
+      6: '精通',
+      7: '完全掌握'
+    }
+  },
+
   // Dictation Page
   dictationPage: {
     title: '听写练习',
@@ -591,6 +642,74 @@ export default {
       week: '本周',
       month: '本月',
       custom: '自定义'
+    }
+  },
+
+  // Vocabulary Editor
+  vocabularyEditor: {
+    title: '管理词汇 - {name}',
+    noUnitSelected: '未选择单元',
+    selectUnitToManage: '请选择一个单元来管理其词汇',
+    statistics: {
+      totalWords: '总词汇',
+      chinese: '中文',
+      english: 'English'
+    },
+    tabs: {
+      chinese: '中文词汇',
+      english: '英文术语'
+    },
+    addChinese: {
+      title: '添加中文单词',
+      placeholder: '输入中文单词...',
+      button: '添加单词'
+    },
+    addEnglish: {
+      title: '添加英文术语',
+      placeholder: '输入英文术语...',
+      button: '添加术语'
+    },
+    audioDialog: {
+      recordTitle: '录音',
+      playTitle: '播放音频',
+      loading: '加载音频...',
+      close: '关闭'
+    },
+    editDialog: {
+      title: '编辑{type}',
+      chineseLabel: '输入中文单词...',
+      englishLabel: '输入英文术语...',
+      validation: '文本是必需的',
+      cancel: '取消',
+      save: '保存'
+    },
+    deleteDialog: {
+      title: '确认删除',
+      message: '您确定要删除"{text}"吗？',
+      ok: '删除',
+      cancel: '取消'
+    },
+    notifications: {
+      addSuccess: '{type}"{text}"添加成功',
+      addError: '添加{type}失败',
+      updateSuccess: '词汇项目更新成功',
+      updateError: '更新词汇项目失败',
+      deleteSuccess: '"{text}"删除成功',
+      deleteError: '删除词汇项目失败',
+      loadError: '加载词汇失败',
+      audioSaveSuccess: '音频录制保存成功',
+      audioSaveError: '保存音频录制失败',
+      noAudio: '该项目没有录制的音频',
+      audioOpenError: '打开录音器失败',
+      playError: '播放音频失败',
+      recordingError: '录音错误',
+      playbackError: '播放错误'
+    },
+    types: {
+      chinese: '中文',
+      english: '英文',
+      chineseWord: '中文单词',
+      englishTerm: '英文术语'
     }
   },
 

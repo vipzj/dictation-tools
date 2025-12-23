@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">
-          Manage Vocabulary - {{ unit?.name }}
+          {{ $t('vocabularyEditor.title', { name: unit?.name }) }}
         </div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup @click="handleClose" />
@@ -12,8 +12,8 @@
       <q-card-section>
         <div v-if="!unit" class="text-center">
           <q-icon name="warning" size="3rem" color="warning" class="q-mb-md" />
-          <div class="text-h6 q-mb-sm">No Unit Selected</div>
-          <div class="text-grey-6">Please select a unit to manage its vocabulary.</div>
+          <div class="text-h6 q-mb-sm">{{ $t('vocabularyEditor.noUnitSelected') }}</div>
+          <div class="text-grey-6">{{ $t('vocabularyEditor.selectUnitToManage') }}</div>
         </div>
 
         <div v-else>
@@ -27,7 +27,7 @@
                       <q-avatar color="primary" text-color="white" size="md" icon="school" />
                     </div>
                     <div class="col text-center">
-                      <div class="text-caption text-grey-6">总词汇</div>
+                      <div class="text-caption text-grey-6">{{ $t('vocabularyEditor.statistics.totalWords') }}</div>
                       <div class="text-h6 text-weight-bold text-primary">{{ vocabularyStats.total }}</div>
                     </div>
                   </div>
@@ -43,7 +43,7 @@
                       <q-avatar color="red" text-color="white" size="md" icon="translate" />
                     </div>
                     <div class="col text-center">
-                      <div class="text-caption text-grey-6">中文</div>
+                      <div class="text-caption text-grey-6">{{ $t('vocabularyEditor.statistics.chinese') }}</div>
                       <div class="text-h6 text-weight-bold text-red">{{ vocabularyStats.chinese }}</div>
                     </div>
                   </div>
@@ -59,7 +59,7 @@
                       <q-avatar color="blue" text-color="white" size="md" icon="language" />
                     </div>
                     <div class="col text-center">
-                      <div class="text-caption text-grey-6">English</div>
+                      <div class="text-caption text-grey-6">{{ $t('vocabularyEditor.statistics.english') }}</div>
                       <div class="text-h6 text-weight-bold text-blue">{{ vocabularyStats.english }}</div>
                     </div>
                   </div>
@@ -70,12 +70,12 @@
 
           <!-- Tab Panel for Chinese and English -->
           <q-tabs v-model="activeTab" dense class="q-mb-lg">
-            <q-tab name="chinese" icon="translate" label="中文 Words">
+            <q-tab name="chinese" icon="translate" :label="$t('vocabularyEditor.tabs.chinese')">
               <q-badge v-if="chineseVocabulary.length > 0" color="red" floating>
                 {{ chineseVocabulary.length }}
               </q-badge>
             </q-tab>
-            <q-tab name="english" icon="language" label="English Terms">
+            <q-tab name="english" icon="language" :label="$t('vocabularyEditor.tabs.english')">
               <q-badge v-if="englishVocabulary.length > 0" color="blue" floating>
                 {{ englishVocabulary.length }}
               </q-badge>
@@ -87,13 +87,13 @@
               <!-- Add Word Form -->
               <q-card flat bordered class="q-mb-lg">
                 <q-card-section>
-                  <div class="text-subtitle2 q-mb-sm">Add Chinese Word</div>
+                  <div class="text-subtitle2 q-mb-sm">{{ $t('vocabularyEditor.addChinese.title') }}</div>
                   <div class="row q-gutter-md">
                     <div class="col-12 col-md-8">
                       <q-input
                         v-model="newChineseWord"
                         outlined
-                        placeholder="Enter Chinese word..."
+                        :placeholder="$t('vocabularyEditor.addChinese.placeholder')"
                         maxlength="100"
                         @keyup.enter="addChineseWord"
                       >
@@ -106,7 +106,7 @@
                       <q-btn
                         color="primary"
                         icon="add"
-                        label="Add Word"
+                        :label="$t('vocabularyEditor.addChinese.button')"
                         @click="addChineseWord"
                         :disable="!newChineseWord.trim()"
                         class="full-width"
@@ -131,13 +131,13 @@
               <!-- Add Term Form -->
               <q-card flat bordered class="q-mb-lg">
                 <q-card-section>
-                  <div class="text-subtitle2 q-mb-sm">Add English Term</div>
+                  <div class="text-subtitle2 q-mb-sm">{{ $t('vocabularyEditor.addEnglish.title') }}</div>
                   <div class="row q-gutter-md">
                     <div class="col-12 col-md-8">
                       <q-input
                         v-model="newEnglishTerm"
                         outlined
-                        placeholder="Enter English term..."
+                        :placeholder="$t('vocabularyEditor.addEnglish.placeholder')"
                         maxlength="100"
                         @keyup.enter="addEnglishTerm"
                       >
@@ -150,7 +150,7 @@
                       <q-btn
                         color="primary"
                         icon="add"
-                        label="Add Term"
+                        :label="$t('vocabularyEditor.addEnglish.button')"
                         @click="addEnglishTerm"
                         :disable="!newEnglishTerm.trim()"
                         class="full-width"
@@ -175,7 +175,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Close" color="primary" v-close-popup @click="handleClose" />
+        <q-btn flat :label="$t('vocabularyEditor.audioDialog.close')" color="primary" v-close-popup @click="handleClose" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -184,7 +184,7 @@
   <q-dialog v-model="showAudioRecorder" persistent>
     <q-card style="min-width: 500px">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Record Audio</div>
+        <div class="text-h6">{{ $t('vocabularyEditor.audioDialog.recordTitle') }}</div>
         <div class="text-subtitle2 q-ml-sm">
           "{{ recordingForItem?.text }}"
         </div>
@@ -194,7 +194,7 @@
 
       <q-card-section class="text-center q-pa-lg">
         <div class="text-h5 q-mb-lg text-weight-bold">
-          {{ recordingForItem?.type === 'chinese' ? '中文' : 'English' }}
+          {{ recordingForItem?.type === 'chinese' ? $t('vocabularyEditor.types.chinese') : $t('vocabularyEditor.types.english') }}
         </div>
         <div class="text-h4 q-mb-md">
           "{{ recordingForItem?.text }}"
@@ -213,7 +213,7 @@
   <q-dialog v-model="showAudioPlayer" persistent>
     <q-card style="min-width: 500px">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Play Audio</div>
+        <div class="text-h6">{{ $t('vocabularyEditor.audioDialog.playTitle') }}</div>
         <div class="text-subtitle2 q-ml-sm">
           "{{ playingForItem?.text }}"
         </div>
@@ -223,7 +223,7 @@
 
       <q-card-section class="text-center q-pa-lg">
         <div class="text-h5 q-mb-lg text-weight-bold">
-          {{ playingForItem?.type === 'chinese' ? '中文' : 'English' }}
+          {{ playingForItem?.type === 'chinese' ? $t('vocabularyEditor.types.chinese') : $t('vocabularyEditor.types.english') }}
         </div>
         <div class="text-h4 q-mb-md">
           "{{ playingForItem?.text }}"
@@ -239,7 +239,7 @@
 
         <div v-else class="text-center">
           <q-spinner-dots size="2rem" color="primary" class="q-mb-md" />
-          <div class="text-body1">Loading audio...</div>
+          <div class="text-body1">{{ $t('vocabularyEditor.audioDialog.loading') }}</div>
         </div>
       </q-card-section>
     </q-card>
@@ -249,7 +249,7 @@
   <q-dialog v-model="showEditDialog" persistent>
     <q-card style="min-width: 400px">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Edit {{ editingItem?.type === 'chinese' ? 'Chinese Word' : 'English Term' }}</div>
+        <div class="text-h6">{{ $t('vocabularyEditor.editDialog.title', { type: editingItem?.type === 'chinese' ? $t('vocabularyEditor.types.chineseWord') : $t('vocabularyEditor.types.englishTerm') }) }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -259,18 +259,18 @@
           <q-input
             v-model="editingText"
             outlined
-            :label="`Enter ${editingItem?.type === 'chinese' ? 'Chinese word' : 'English term'}...`"
+            :label="editingItem?.type === 'chinese' ? $t('vocabularyEditor.editDialog.chineseLabel') : $t('vocabularyEditor.editDialog.englishLabel')"
             maxlength="100"
-            :rules="[val => !!val.trim() || 'Text is required']"
+            :rules="[val => !!val.trim() || $t('vocabularyEditor.editDialog.validation')]"
           />
         </q-form>
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey" v-close-popup />
+        <q-btn flat :label="$t('vocabularyEditor.editDialog.cancel')" color="grey" v-close-popup />
         <q-btn
           color="primary"
-          label="Save"
+          :label="$t('vocabularyEditor.editDialog.save')"
           @click="saveEdit"
           :disable="!editingText.trim()"
         />
@@ -282,6 +282,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 import { vocabularyService } from 'src/services/indexeddb';
 import { audioService } from 'src/services/audioService';
 import type { Unit, VocabularyItem } from 'src/types/unit';
@@ -313,6 +314,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const $q = useQuasar();
+const { t } = useI18n();
 
 // Reactive data
 const activeTab = ref('chinese');
@@ -360,7 +362,7 @@ async function loadVocabulary() {
     console.error('Failed to load vocabulary:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to load vocabulary items',
+      message: t('vocabularyEditor.notifications.loadError'),
       icon: 'error'
     });
   }
@@ -383,14 +385,14 @@ async function addChineseWord() {
 
     $q.notify({
       type: 'positive',
-      message: `Chinese word "${text}" added successfully`,
+      message: t('vocabularyEditor.notifications.addSuccess', { type: t('vocabularyEditor.types.chineseWord'), text }),
       icon: 'add'
     });
   } catch (error) {
     console.error('Failed to add Chinese word:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to add Chinese word',
+      message: t('vocabularyEditor.notifications.addError', { type: t('vocabularyEditor.types.chineseWord') }),
       icon: 'error'
     });
   }
@@ -413,14 +415,14 @@ async function addEnglishTerm() {
 
     $q.notify({
       type: 'positive',
-      message: `English term "${text}" added successfully`,
+      message: t('vocabularyEditor.notifications.addSuccess', { type: t('vocabularyEditor.types.englishTerm'), text }),
       icon: 'add'
     });
   } catch (error) {
     console.error('Failed to add English term:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to add English term',
+      message: t('vocabularyEditor.notifications.addError', { type: t('vocabularyEditor.types.englishTerm') }),
       icon: 'error'
     });
   }
@@ -447,14 +449,14 @@ async function saveEdit() {
 
     $q.notify({
       type: 'positive',
-      message: 'Vocabulary item updated successfully',
+      message: t('vocabularyEditor.notifications.updateSuccess'),
       icon: 'save'
     });
   } catch (error) {
     console.error('Failed to update vocabulary item:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to update vocabulary item',
+      message: t('vocabularyEditor.notifications.updateError'),
       icon: 'error'
     });
   }
@@ -462,14 +464,14 @@ async function saveEdit() {
 
 function deleteVocabularyItem(item: VocabularyItem) {
   $q.dialog({
-    title: 'Confirm Delete',
-    message: `Are you sure you want to delete "${item.text}"?`,
+    title: t('vocabularyEditor.deleteDialog.title'),
+    message: t('vocabularyEditor.deleteDialog.message', { text: item.text }),
     ok: {
-      label: 'Delete',
+      label: t('vocabularyEditor.deleteDialog.ok'),
       color: 'negative'
     },
     cancel: {
-      label: 'Cancel',
+      label: t('vocabularyEditor.deleteDialog.cancel'),
       color: 'grey'
     }
   }).onOk(() => {
@@ -480,14 +482,14 @@ function deleteVocabularyItem(item: VocabularyItem) {
 
         $q.notify({
           type: 'positive',
-          message: `"${item.text}" deleted successfully`,
+          message: t('vocabularyEditor.notifications.deleteSuccess', { text: item.text }),
           icon: 'delete'
         });
       } catch (error) {
         console.error('Failed to delete vocabulary item:', error);
         $q.notify({
           type: 'negative',
-          message: 'Failed to delete vocabulary item',
+          message: t('vocabularyEditor.notifications.deleteError'),
           icon: 'error'
         });
       }
@@ -503,7 +505,7 @@ function recordAudio(item: VocabularyItem) {
     console.error('Failed to open audio recorder:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to open audio recorder',
+      message: t('vocabularyEditor.notifications.audioOpenError'),
       icon: 'error'
     });
   }
@@ -514,7 +516,7 @@ async function playAudio(item: VocabularyItem) {
     if (!item.hasAudio) {
       $q.notify({
         type: 'warning',
-        message: 'No audio recorded for this item',
+        message: t('vocabularyEditor.notifications.noAudio'),
         icon: 'warning'
       });
       return;
@@ -536,7 +538,7 @@ async function playAudio(item: VocabularyItem) {
     console.error('Failed to play audio:', error);
     $q.notify({
       type: 'negative',
-      message: error instanceof Error ? error.message : 'Failed to play audio',
+      message: error instanceof Error ? error.message : t('vocabularyEditor.notifications.playError'),
       icon: 'error'
     });
     showAudioPlayer.value = false;
@@ -581,14 +583,14 @@ async function onAudioRecordingStopped(audioBlob: Blob) {
 
     $q.notify({
       type: 'positive',
-      message: 'Audio recording saved successfully',
+      message: t('vocabularyEditor.notifications.audioSaveSuccess'),
       icon: 'check'
     });
   } catch (error) {
     console.error('Failed to save audio recording:', error);
     $q.notify({
       type: 'negative',
-      message: error instanceof Error ? error.message : 'Failed to save audio recording',
+      message: error instanceof Error ? error.message : t('vocabularyEditor.notifications.audioSaveError'),
       icon: 'error'
     });
   }
@@ -598,7 +600,7 @@ function onAudioRecordingError(error: string) {
   console.error('Audio recording error:', error);
   $q.notify({
     type: 'negative',
-    message: `Recording error: ${error}`,
+    message: `${t('vocabularyEditor.notifications.recordingError')}: ${error}`,
     icon: 'error'
   });
 }
@@ -618,7 +620,7 @@ function onAudioPlaybackError(error: string) {
   console.error('Audio playback error:', error);
   $q.notify({
     type: 'negative',
-    message: `Playback error: ${error}`,
+    message: `${t('vocabularyEditor.notifications.playbackError')}: ${error}`,
     icon: 'error'
   });
 }
